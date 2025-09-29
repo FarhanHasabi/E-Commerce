@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Produk - Glamora</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <a href="index.html" class="logo">
+        <img src="assets/img/logo.png" alt="Glamora Logo" />
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-btn">Home</a></li>
+        <li><a href="category.html" class="nav-btn">Category</a></li>
+        <li><a href="cart.html" class="nav-btn">Shopping Cart</a></li>
+        <li><a href="checkout.html" class="nav-btn">Checkout</a></li>
+        <li><a href="contact.html" class="nav-btn">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Product Detail -->
+  <main class="product-detail">
+    <div class="product-image">
+      <img id="productImage" src="" alt="Gambar Produk" />
+    </div>
+    <div class="product-info">
+      <h2 id="productName"></h2>
+      <p class="price" id="productPrice"></p>
+      <p class="description" id="productDescription"></p>
+
+      <label for="sizeSelect">Ukuran:</label>
+      <select id="sizeSelect">
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+      </select>
+
+      <label for="quantity">Jumlah:</label>
+      <input type="number" id="quantity" value="1" min="1" />
+
+      <button id="addToCartBtn" class="btn-pink">Add to Cart</button>
+    </div>
+  </main>
+
+  <!-- Script -->
+  <script>
+    const products = {
+      "baju-elegan": {
+        name: "Baju Elegan",
+        price: 249000,
+        description: "Gaun elegan dengan potongan klasik dan bahan premium.",
+        image: "assets/img/baju1.jpg"
+      },
+      "baju-kasual": {
+        name: "Baju Kasual",
+        price: 189000,
+        description: "Baju kasual nyaman dipakai sehari-hari.",
+        image: "assets/img/baju2.jpg"
+      },
+      "baju-formal": {
+        name: "Baju Formal",
+        price: 299000,
+        description: "Baju formal cocok untuk acara resmi dan kantor.",
+        image: "assets/img/baju3.jpg"
+      }
+    };
+
+    // Ambil ID dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
+    const product = products[productId];
+
+    // Tampilkan data produk
+    if (product) {
+      document.getElementById("productName").textContent = product.name;
+      document.getElementById("productPrice").textContent = "Rp " + product.price.toLocaleString("id-ID");
+      document.getElementById("productDescription").textContent = product.description;
+      document.getElementById("productImage").src = product.image;
+    } else {
+      document.querySelector(".product-detail").innerHTML = "<p>Produk tidak ditemukan.</p>";
+    }
+
+    // Tambahkan ke keranjang
+    document.getElementById("addToCartBtn").addEventListener("click", function () {
+      const size = document.getElementById("sizeSelect").value;
+      const quantity = parseInt(document.getElementById("quantity").value);
+
+      const item = {
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        size,
+        quantity
+      };
+
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.push(item);
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      alert(`${item.name} (Ukuran ${size}) berhasil ditambahkan ke keranjang!`);
+    });
+  </script>
+</body>
+</html>

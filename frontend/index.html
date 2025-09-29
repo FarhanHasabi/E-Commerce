@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glamora - Home</title>
+    <!-- Memuat Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Playfair Display (judul) dan Poppins (teks) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan Poppins sebagai default, Playfair untuk judul */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fb;
+            color: #333;
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Style untuk Carousel */
+        .carousel-item {
+            /* Pastikan item carousel mengisi kontainer dan bergeser tanpa terlihat */
+            flex-shrink: 0;
+            width: 100%;
+            transition: transform 1s ease-in-out; /* Animasi geser selama 1 detik */
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Navbar -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <!-- Logo - Menggunakan teks sederhana karena gambar logo.png tidak tersedia -->
+            <a href="index.html" class="text-3xl font-playfair text-pink-600 font-bold tracking-wider">
+                Glamora
+            </a>
+            <ul class="flex space-x-6 text-sm font-medium">
+                <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
+                <li><a href="category.html" class="text-gray-700 hover:text-pink-600 transition">Category</a></li>
+                <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
+                <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
+                <li><a href="contact.html" class="text-gray-700 hover:text-pink-600 transition">Contact</a></li>
+                <li><a href="login.html" class="bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition shadow-lg" id="loginBtn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="container mx-auto p-6 md:p-8">
+
+        <!-- Hero Section -->
+        <section class="flex flex-col md:flex-row items-center justify-between bg-pink-50 text-gray-800 rounded-3xl p-10 md:p-16 mb-12 shadow-lg">
+            <div class="md:w-1/2 mb-8 md:mb-0">
+                <h2 class="text-5xl md:text-6xl font-playfair font-bold leading-tight mb-4">Welcome to Glamora</h2>
+                <p class="text-xl mb-6">Discover timeless fashion crafted for your unique style. ✨</p>
+                <a href="category.html" class="inline-block bg-pink-600 text-white text-lg px-8 py-3 rounded-full hover:bg-pink-700 transition duration-300 shadow-xl transform hover:scale-[1.02]">Shop Now</a>
+            </div>
+            <div class="md:w-1/3 flex justify-center">
+                <!-- Gambar Diamond -->
+                <img src="assets/img/diamond.png" alt="Diamond Icon" class="w-32 h-32 md:w-48 md:h-48 object-contain" />
+            </div>
+        </section>
+
+        <!-- Best Seller Section (Carousel - 5 Random Items) -->
+        <section class="my-12">
+            <h3 class="text-4xl font-playfair font-semibold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Pilihan Terbaik Minggu Ini</h3>
+            
+            <div class="relative overflow-hidden bg-white rounded-xl shadow-2xl p-6">
+                <!-- Kontainer untuk Item Carousel -->
+                <div id="product-carousel-track" class="flex transition-transform duration-1000 ease-in-out">
+                    <!-- Produk akan dimuat di sini oleh JavaScript -->
+                    <div id="loading-indicator" class="w-full text-center py-12 text-xl text-gray-500 carousel-item">
+                        Memuat 5 produk acak dari Supabase...
+                    </div>
+                </div>
+
+                <!-- Kontrol Manual (Kiri/Kanan) -->
+                <button id="prevBtn" class="absolute top-1/2 left-3 transform -translate-y-1/2 bg-pink-600 text-white p-3 rounded-full shadow-lg hover:bg-pink-700 transition z-20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button id="nextBtn" class="absolute top-1/2 right-3 transform -translate-y-1/2 bg-pink-600 text-white p-3 rounded-full shadow-lg hover:bg-pink-700 transition z-20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Bagian Lain (Opsional, untuk mengisi halaman di bawah carousel) -->
+        <section class="mt-16 text-center">
+            <h3 class="text-3xl font-playfair font-semibold text-gray-700 mb-4">Koleksi Terbaru</h3>
+            <p class="text-gray-600 mb-8">Jelajahi kategori kami untuk menemukan lebih banyak gaya yang Anda sukai.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="category.html?type=baju" class="text-pink-600 hover:text-pink-800 font-medium">Baju</a>
+                <a href="category.html?type=aksesoris" class="text-pink-600 hover:text-pink-800 font-medium">Aksesoris</a>
+                <a href="category.html?type=sepatu" class="text-pink-600 hover:text-pink-800 font-medium">Sepatu</a>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Footer Sederhana -->
+    <footer class="bg-gray-800 text-white p-6 mt-12">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Glamora. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <!-- JavaScript untuk mengambil data dari Flask API dan mengelola Carousel -->
+    <script>
+        let currentSlide = 0;
+        const SLIDE_INTERVAL = 5000; // 5 detik
+        const MAX_PRODUCTS = 5; // Hanya tampilkan 5 data random
+        let carouselTimer;
+        
+        // Konstanta untuk API URL
+        // Menggunakan window.location.origin untuk memastikan URL absolut dan menghindari error parsing
+        const API_BASE_URL = window.location.origin;
+
+        // Fungsi untuk mengurus status login (dipertahankan dari kode Anda)
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginBtn = document.getElementById("loginBtn");
+            const isLoggedIn = localStorage.getItem("isLoggedIn"); 
+            const userName = localStorage.getItem("userName"); 
+
+            if (isLoggedIn === "true" && userName && loginBtn) {
+                loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
+                loginBtn.href = "#"; 
+                loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
+            }
+        });
+
+        // --- Logika Carousel ---
+        
+        function updateCarousel(track, totalSlides) {
+            if (totalSlides === 0) return;
+
+            // Memastikan currentSlide berada dalam batas (0 hingga totalSlides-1)
+            if (currentSlide >= totalSlides) {
+                currentSlide = 0;
+            } else if (currentSlide < 0) {
+                currentSlide = totalSlides - 1;
+            }
+
+            // Hitung pergeseran: -100% * index slide saat ini
+            const offset = -currentSlide * 100;
+            track.style.transform = `translateX(${offset}%)`;
+        }
+
+        function startCarouselAutoPlay(track, totalSlides) {
+            // Hentikan timer lama (jika ada)
+            clearInterval(carouselTimer); 
+
+            // Atur timer baru untuk animasi geser otomatis
+            carouselTimer = setInterval(() => {
+                currentSlide++;
+                updateCarousel(track, totalSlides);
+            }, SLIDE_INTERVAL);
+        }
+
+        function setupCarouselControls(track, totalSlides) {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            // Hentikan autoplay saat user interaksi
+            const resetAutoPlay = () => {
+                clearInterval(carouselTimer);
+                startCarouselAutoPlay(track, totalSlides);
+            };
+
+            prevBtn.addEventListener('click', () => {
+                currentSlide--;
+                updateCarousel(track, totalSlides);
+                resetAutoPlay();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentSlide++;
+                updateCarousel(track, totalSlides);
+                resetAutoPlay();
+            });
+
+            // Sembunyikan kontrol jika hanya ada 1 produk
+            if (totalSlides <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+
+        // --- Logika Ambil Data & Render ---
+
+        // Fungsi pembantu untuk membuat kartu produk versi carousel
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            // Menambahkan class 'carousel-item' dan layout flex untuk isi card
+            card.className = 'carousel-item flex flex-col md:flex-row items-center p-8';
+            
+            // Menggunakan product.image. Jika datanya null, akan menggunakan placeholder.
+            const imageUrl = product.image || `https://placehold.co/500x700/f0abfc/701a75?text=${product.name ? product.name.substring(0, 1).toUpperCase() : 'P'}`;
+            const priceFormatted = (product.price || 0).toLocaleString('id-ID');
+
+            card.innerHTML = `
+                <!-- Kolom Kiri: Gambar Produk -->
+                <div class="md:w-1/2 w-full flex justify-center mb-6 md:mb-0">
+                    <img src="${imageUrl}" alt="${product.name || 'Produk'}" 
+                        class="w-full max-w-sm h-96 object-cover object-center rounded-xl shadow-xl border-4 border-pink-100"
+                        onerror="this.onerror=null;this.src='https://placehold.co/500x700/f0abfc/701a75?text=Gambar+Kosong';"
+                    >
+                </div>
+                <!-- Kolom Kanan: Detail Produk -->
+                <div class="md:w-1/2 w-full md:pl-10 text-center md:text-left">
+                    <h4 class="text-4xl font-playfair font-bold text-gray-900 mb-3">${product.name || 'Nama Produk Mewah'}</h4>
+                    <p class="text-lg text-gray-600 mb-4">${product.description ? product.description : 'Pilihan eksklusif dengan desain yang elegan dan kualitas bahan premium.'}</p>
+                    <p class="text-4xl font-extrabold text-pink-600 mb-6">
+                        Rp ${priceFormatted}
+                    </p>
+                    <a href="product.html?id=${product.id || 'detail'}" class="inline-block bg-pink-600 text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-pink-700 transition duration-300 shadow-xl transform hover:scale-105">
+                        Lihat Detail & Beli
+                    </a>
+                </div>
+            `;
+            return card;
+        }
+
+        // Fungsi utama untuk mengambil data produk dari Supabase via Flask API
+        async function fetchProducts() {
+            const track = document.getElementById('product-carousel-track');
+            const loadingIndicator = document.getElementById('loading-indicator');
+
+            try {
+                // Panggil endpoint API Flask
+                // Menggunakan variabel API_BASE_URL untuk membuat URL menjadi absolut
+                const apiUrl = `${API_BASE_URL}/api/products`;
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const allProducts = await response.json();
+                
+                // 1. Logika Randomisasi dan Pembatasan Data (Hanya ambil 5)
+                const shuffled = allProducts.sort(() => 0.5 - Math.random());
+                const randomProducts = shuffled.slice(0, MAX_PRODUCTS);
+                
+                loadingIndicator.remove();
+                track.innerHTML = ''; // Kosongkan track
+
+                if (randomProducts.length === 0) {
+                    track.innerHTML = '<p class="col-span-full text-center text-xl text-red-500 py-10">Tidak ada produk yang ditemukan untuk carousel.</p>';
+                    return;
+                }
+
+                // 2. Render Produk ke Carousel
+                randomProducts.forEach(product => {
+                    const productCard = createProductCard(product);
+                    track.appendChild(productCard);
+                });
+
+                // 3. Setup Carousel
+                const totalSlides = randomProducts.length;
+                updateCarousel(track, totalSlides);
+                setupCarouselControls(track, totalSlides);
+                startCarouselAutoPlay(track, totalSlides); // Mulai geser otomatis
+                
+
+            } catch (error) {
+                // Memberikan informasi debug yang lebih jelas di konsol
+                console.error("Gagal mengambil produk:", error); 
+                loadingIndicator.textContent = `Gagal memuat data: ${error.message}. Coba periksa koneksi ke server Flask.`;
+                loadingIndicator.classList.add('text-red-500', 'font-semibold');
+            }
+        }
+
+        // Jalankan fungsi saat halaman selesai dimuat
+        window.onload = fetchProducts;
+
+    </script>
+
+</body>
+</html>

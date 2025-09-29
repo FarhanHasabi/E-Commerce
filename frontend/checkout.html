@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Glamora</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <a href="index.html" class="logo">
+        <img src="assets/img/logo.png" alt="Glamora Logo" />
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-btn">Home</a></li>
+        <li><a href="category.html" class="nav-btn">Category</a></li>
+        <li><a href="cart.html" class="nav-btn">Shopping Cart</a></li>
+        <li><a href="checkout.html" class="nav-btn">Checkout</a></li>
+        <li><a href="contact.html" class="nav-btn">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Checkout Layout -->
+  <main class="checkout-layout">
+    <!-- Checkout Form -->
+    <section class="checkout-form">
+      <h2>Checkout</h2>
+
+      <h3>1. Customer Information</h3>
+      <input type="text" placeholder="First Name" required>
+      <input type="text" placeholder="Last Name" required>
+      <input type="email" placeholder="Email Address" required>
+      <input type="tel" placeholder="Phone Number" required>
+
+      <h3>2. Shipping Address</h3>
+      <input type="text" placeholder="Street Address" required>
+      <input type="text" placeholder="Apartment/Suite (Optional)">
+      <input type="text" placeholder="City" required>
+      <input type="text" placeholder="State/Province" required>
+      <input type="text" placeholder="Postal Code" required>
+
+      <h3>3. Payment Method</h3>
+      <select required>
+        <option value="">Select Payment Method</option>
+        <option value="card">Credit/Debit Card</option>
+        <option value="cod">Cash on Delivery</option>
+        <option value="transfer">Bank Transfer</option>
+      </select>
+
+      <div class="card-details">
+        <input type="text" placeholder="Card Number (e.g. 1234 5678 9012 3456)">
+        <input type="text" placeholder="Expiration Date (MM/YY)">
+        <input type="text" placeholder="CVV Code (e.g. 123)">
+        <input type="text" placeholder="Name on Card">
+      </div>
+
+      <h3>4. Review & Place Order</h3>
+      <label><input type="checkbox" required> I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></label>
+      <button type="button" class="btn-dark" id="placeOrderBtn">Place Order – Rp0</button>
+    </section>
+
+    <!-- Order Summary -->
+    <aside class="order-summary">
+      <h3>Order Summary</h3>
+      <p>Subtotal: <strong id="subtotal">Rp0</strong></p>
+      <p>Shipping Fee: <strong id="shipping">Rp0</strong></p>
+      <p>Tax: <strong id="tax">Rp0</strong></p>
+      <hr>
+      <p>Total: <strong id="total">Rp0</strong></p>
+    </aside>
+  </main>
+
+  <!-- Script: Ambil Data Cart dan Hitung Total -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+
+      let subtotal = 0;
+      cartItems.forEach(item => {
+        subtotal += item.price * item.quantity;
+      });
+
+      const shipping = 30000;
+      const tax = Math.round(subtotal * 0.1); // contoh: 10% pajak
+      const total = subtotal + shipping + tax;
+
+      // Tampilkan di Order Summary
+      document.getElementById("subtotal").textContent = `Rp${subtotal.toLocaleString("id-ID")}`;
+      document.getElementById("shipping").textContent = `Rp${shipping.toLocaleString("id-ID")}`;
+      document.getElementById("tax").textContent = `Rp${tax.toLocaleString("id-ID")}`;
+      document.getElementById("total").textContent = `Rp${total.toLocaleString("id-ID")}`;
+
+      // Update tombol Place Order
+      document.getElementById("placeOrderBtn").textContent = `Place Order – Rp${total.toLocaleString("id-ID")}`;
+    });
+
+    // Redirect ke halaman konfirmasi
+    document.getElementById("placeOrderBtn").addEventListener("click", function () {
+      sessionStorage.setItem("orderStatus", "Confirmed");
+      sessionStorage.setItem("deliveryEstimate", "3–5 business days");
+      window.location.href = "order-confirmation.html";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keranjang - Glamora</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <a href="index.html" class="logo">
+        <img src="assets/img/logo.png" alt="Glamora Logo" />
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-btn">Home</a></li>
+        <li><a href="category.html" class="nav-btn">Category</a></li>
+        <li><a href="cart.html" class="nav-btn">Shopping Cart</a></li>
+        <li><a href="checkout.html" class="nav-btn">Checkout</a></li>
+        <li><a href="contact.html" class="nav-btn">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="cart-layout">
+    <!-- Produk di Keranjang -->
+    <section class="cart-items">
+      <h2>Shopping Cart</h2>
+      <div id="cartItems"></div>
+
+      <!-- Cart Actions -->
+      <div class="cart-actions">
+        <button class="btn-danger" id="clearCartBtn">Clear Cart</button>
+        <button class="btn-pink" id="checkoutBtn">Lanjut ke Checkout</button>
+        <a href="category.html" class="btn-link">← Lanjut Belanja</a>
+      </div>
+    </section>
+
+    <!-- Ringkasan Pesanan -->
+    <aside class="order-summary">
+      <h3>Order Summary</h3>
+      <p>Subtotal: <strong id="subtotalDisplay">Rp0</strong></p>
+    </aside>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const cartContainer = document.getElementById("cartItems");
+      const subtotalDisplay = document.getElementById("subtotalDisplay");
+      const clearCartBtn = document.getElementById("clearCartBtn");
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = "<p>Keranjang kosong.</p>";
+        subtotalDisplay.textContent = "Rp0";
+        checkoutBtn.disabled = true;
+        return;
+      }
+
+      let subtotal = 0;
+
+      cart.forEach(item => {
+        const totalHarga = item.price * item.quantity;
+        subtotal += totalHarga;
+
+        const itemEl = document.createElement("div");
+        itemEl.classList.add("cart-card");
+        itemEl.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-details">
+            <h4>${item.name}</h4>
+            <p>Ukuran: ${item.size}</p>
+            <p>Harga: Rp${item.price.toLocaleString("id-ID")}</p>
+            <p>Jumlah: ${item.quantity}</p>
+            <p>Total: <strong>Rp${totalHarga.toLocaleString("id-ID")}</strong></p>
+          </div>
+        `;
+        cartContainer.appendChild(itemEl);
+      });
+
+      subtotalDisplay.textContent = "Rp" + subtotal.toLocaleString("id-ID");
+
+      clearCartBtn.addEventListener("click", () => {
+        if (confirm("Yakin ingin menghapus semua isi keranjang?")) {
+          localStorage.removeItem("cart");
+          location.reload();
+        }
+      });
+
+      checkoutBtn.addEventListener("click", () => {
+        sessionStorage.setItem("cartItems", JSON.stringify(cart));
+        window.location.href = "checkout.html";
+      });
+    });
+  </script>
+</body>
+</html>

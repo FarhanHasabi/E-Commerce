@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kategori - Glamora</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <a href="index.html" class="logo">
+        <img src="assets/img/logo.png" alt="Glamora Logo" />
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-btn">Home</a></li>
+        <li><a href="category.html" class="nav-btn">Category</a></li>
+        <li><a href="cart.html" class="nav-btn">Shopping Cart</a></li>
+        <li><a href="checkout.html" class="nav-btn">Checkout</a></li>
+        <li><a href="contact.html" class="nav-btn">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <input type="text" placeholder="Search Products" class="search-input">
+
+    <select class="filter-dropdown">
+      <option>All Price</option>
+      <option>Rp150.000 - Rp250.000</option>
+      <option>Rp300.000 - Rp450.000</option>
+      <option>Rp500.000+</option>
+    </select>
+
+    <select class="filter-dropdown">
+      <option>Sort By</option>
+      <option>Featured</option>
+      <option>Newest</option>
+      <option>Price: Low to High</option>
+      <option>Price: High to Low</option>
+    </select>
+
+    <select class="filter-dropdown">
+      <option>12 per page</option>
+      <option>24 per page</option>
+      <option>36 per page</option>
+    </select>
+  </div>
+
+  <!-- Main Content -->
+  <main class="category-layout">
+    <!-- Sidebar Kategori -->
+    <aside class="sidebar">
+      <h3>Kategori Produk</h3>
+      <ul class="category-list">
+        <li><button class="btn-pink">Semua</button></li>
+        <li><button class="btn-pink">Pakaian Pria</button></li>
+        <li><button class="btn-pink">Pakaian Wanita</button></li>
+        <li><button class="btn-pink">Pakaian Anak</button></li>
+      </ul>
+    </aside>
+
+    <!-- Produk -->
+    <section class="product-section">
+      <h2>Rekomendasi Glamora</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <a href="product.html?id=baju-elegan">
+            <img src="assets/img/baju1.jpg" alt="Baju Elegan">
+            <h4>Baju Elegan</h4>
+            <p class="product-price">Rp 249.000</p>
+          </a>
+          <a href="product.html?id=baju-elegan" class="btn-accent">View Details</a>
+        </div>
+
+        <div class="product-card">
+          <a href="product.html?id=baju-kasual">
+            <img src="assets/img/baju2.jpg" alt="Baju Kasual">
+            <h4>Baju Kasual</h4>
+            <p class="product-price">Rp 189.000</p>
+          </a>
+          <a href="product.html?id=baju-kasual" class="btn-accent">View Details</a>
+        </div>
+
+        <div class="product-card">
+          <a href="product.html?id=baju-formal">
+            <img src="assets/img/baju3.jpg" alt="Baju Formal">
+            <h4>Baju Formal</h4>
+            <p class="product-price">Rp 299.000</p>
+          </a>
+          <a href="product.html?id=baju-formal" class="btn-accent">View Details</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

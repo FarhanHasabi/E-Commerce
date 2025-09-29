@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmation - Glamora</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #fdf3f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .confirmation-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
+      background-color: white;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .confirmation-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #7a004c;
+    }
+
+    .confirmation-box p {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .order-status, .delivery-estimate {
+      margin: 20px 0;
+    }
+
+    .order-status h3, .delivery-estimate h3 {
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: #7a004c;
+    }
+
+    .btn-accent {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #7a004c;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-accent:hover {
+      background-color: #a3006e;
+    }
+  </style>
+</head>
+<body>
+  <main class="confirmation-container">
+    <section class="confirmation-box">
+      <h2>Thank you for shopping at Glamora!</h2>
+      <p>Your order has been successfully placed. Please wait while your items are being prepared for shipment.</p>
+
+      <div class="order-status">
+        <h3>🛍️ Order Status</h3>
+        <p id="statusText">Loading...</p>
+      </div>
+
+      <div class="delivery-estimate">
+        <h3>📦 Estimated Delivery</h3>
+        <p id="estimateText">Loading...</p>
+      </div>
+
+      <a href="index.html" class="btn-accent">Back to Home</a>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const status = sessionStorage.getItem("orderStatus") || "Processing";
+      const estimate = sessionStorage.getItem("deliveryEstimate") || "Unknown";
+
+      document.getElementById("statusText").textContent = status;
+      document.getElementById("estimateText").textContent = estimate;
+    });
+  </script>
+</body>
+</html>
