@@ -1,101 +1,198 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Keranjang - Glamora</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&display=swap" rel="stylesheet" />
-</head>
-<body>
-  <!-- Navbar -->
-  <header>
-    <nav class="navbar">
-      <a href="index.html" class="logo">
-        <img src="assets/img/logo.png" alt="Glamora Logo" />
-      </a>
-      <ul class="nav-links">
-        <li><a href="index.html" class="nav-btn">Home</a></li>
-        <li><a href="category.html" class="nav-btn">Category</a></li>
-        <li><a href="cart.html" class="nav-btn">Shopping Cart</a></li>
-        <li><a href="checkout.html" class="nav-btn">Checkout</a></li>
-        <li><a href="contact.html" class="nav-btn">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <!-- Main Content -->
-  <main class="cart-layout">
-    <!-- Produk di Keranjang -->
-    <section class="cart-items">
-      <h2>Shopping Cart</h2>
-      <div id="cartItems"></div>
-
-      <!-- Cart Actions -->
-      <div class="cart-actions">
-        <button class="btn-danger" id="clearCartBtn">Clear Cart</button>
-        <button class="btn-pink" id="checkoutBtn">Lanjut ke Checkout</button>
-        <a href="category.html" class="btn-link">← Lanjut Belanja</a>
-      </div>
-    </section>
-
-    <!-- Ringkasan Pesanan -->
-    <aside class="order-summary">
-      <h3>Order Summary</h3>
-      <p>Subtotal: <strong id="subtotalDisplay">Rp0</strong></p>
-    </aside>
-  </main>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const cartContainer = document.getElementById("cartItems");
-      const subtotalDisplay = document.getElementById("subtotalDisplay");
-      const clearCartBtn = document.getElementById("clearCartBtn");
-      const checkoutBtn = document.getElementById("checkoutBtn");
-
-      if (cart.length === 0) {
-        cartContainer.innerHTML = "<p>Keranjang kosong.</p>";
-        subtotalDisplay.textContent = "Rp0";
-        checkoutBtn.disabled = true;
-        return;
-      }
-
-      let subtotal = 0;
-
-      cart.forEach(item => {
-        const totalHarga = item.price * item.quantity;
-        subtotal += totalHarga;
-
-        const itemEl = document.createElement("div");
-        itemEl.classList.add("cart-card");
-        itemEl.innerHTML = `
-          <img src="${item.image}" alt="${item.name}">
-          <div class="cart-details">
-            <h4>${item.name}</h4>
-            <p>Ukuran: ${item.size}</p>
-            <p>Harga: Rp${item.price.toLocaleString("id-ID")}</p>
-            <p>Jumlah: ${item.quantity}</p>
-            <p>Total: <strong>Rp${totalHarga.toLocaleString("id-ID")}</strong></p>
-          </div>
-        `;
-        cartContainer.appendChild(itemEl);
-      });
-
-      subtotalDisplay.textContent = "Rp" + subtotal.toLocaleString("id-ID");
-
-      clearCartBtn.addEventListener("click", () => {
-        if (confirm("Yakin ingin menghapus semua isi keranjang?")) {
-          localStorage.removeItem("cart");
-          location.reload();
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keranjang - Glamora</title>
+    <!-- Memuat Tailwind CSS CDN (seperti di index.html) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Playfair Display (judul) dan Poppins (teks) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan Poppins sebagai default, Playfair untuk judul */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fb;
+            color: #333;
+            /* **PERBAIKAN FOOTER: Mengatur Body sebagai Flex Container** */
+            display: flex;
+            flex-direction: column;
         }
-      });
+        main {
+            /* **PERBAIKAN FOOTER: Konten utama mengambil sisa ruang** */
+            flex-grow: 1; 
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom style untuk layout grid keranjang */
+        .cart-layout {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr; /* Default 1 kolom untuk mobile */
+        }
+        @media (min-width: 768px) {
+            .cart-layout {
+                grid-template-columns: 2fr 1fr; /* 2:1 kolom untuk desktop */
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
 
-      checkoutBtn.addEventListener("click", () => {
-        sessionStorage.setItem("cartItems", JSON.stringify(cart));
-        window.location.href = "checkout.html";
-      });
-    });
-  </script>
+    <!-- Navbar (Disalin dari index.html agar konsisten) -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="index.html" class="text-3xl font-playfair text-pink-600 font-bold tracking-wider">
+                Glamora
+            </a>
+            <ul class="flex space-x-6 text-sm font-medium">
+                <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
+                <li><a href="category.html" class="text-gray-700 hover:text-pink-600 transition">Category</a></li>
+                <li><a href="cart.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600">Shopping Cart</a></li>
+                <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
+                <li><a href="contact.html" class="text-gray-700 hover:text-pink-600 transition">Contact</a></li>
+                <li><a href="login.html" class="bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition shadow-lg" id="loginBtn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-6 md:p-8">
+        <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Shopping Cart</h1>
+
+        <div class="cart-layout">
+            <!-- Produk di Keranjang -->
+            <section class="space-y-4">
+                <div id="cartItems">
+                    <!-- Item cart akan dimuat di sini -->
+                </div>
+    
+                <!-- Cart Actions -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 mt-6 bg-white rounded-xl shadow-md border border-gray-100">
+                    <a href="category.html" class="text-pink-600 hover:text-pink-700 font-medium mb-4 sm:mb-0">
+                        <span class="text-2xl mr-2">←</span> Lanjut Belanja
+                    </a>
+                    <div class="space-x-4">
+                        <button class="px-5 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition shadow-md font-medium" id="clearCartBtn">
+                            Clear Cart
+                        </button>
+                        <button class="px-6 py-2 rounded-full text-white bg-pink-600 hover:bg-pink-700 transition shadow-xl font-semibold" id="checkoutBtn">
+                            Lanjut ke Checkout
+                        </button>
+                    </div>
+                </div>
+            </section>
+    
+            <!-- Ringkasan Pesanan -->
+            <aside class="h-fit bg-white p-6 rounded-xl shadow-2xl border-t-4 border-pink-600">
+                <h3 class="text-2xl font-playfair font-bold mb-4 text-gray-800">Order Summary</h3>
+                <div class="space-y-3 border-b pb-4 mb-4">
+                    <div class="flex justify-between text-lg text-gray-600">
+                        <span>Subtotal Barang:</span>
+                        <strong id="subtotalDisplay" class="text-gray-800">Rp0</strong>
+                    </div>
+                    <div class="flex justify-between text-lg text-gray-600">
+                        <span>Pengiriman:</span>
+                        <strong class="text-gray-800">Rp20.000</strong>
+                    </div>
+                </div>
+                <div class="flex justify-between text-xl font-bold text-gray-900">
+                    <span>Total Keseluruhan:</span>
+                    <strong id="totalGrandDisplay" class="text-pink-600">Rp20.000</strong>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Biaya pengiriman tetap (flat rate).</p>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Footer Sederhana -->
+    <footer class="bg-gray-800 text-white p-6 mt-12">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Glamora. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const SHIPPING_COST = 20000; // Biaya pengiriman tetap
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartContainer = document.getElementById("cartItems");
+            const subtotalDisplay = document.getElementById("subtotalDisplay");
+            const totalGrandDisplay = document.getElementById("totalGrandDisplay");
+            const clearCartBtn = document.getElementById("clearCartBtn");
+            const checkoutBtn = document.getElementById("checkoutBtn");
+
+            // Fungsi untuk mengurus status login (agar navbar konsisten)
+            const loginBtn = document.getElementById("loginBtn");
+            const isLoggedIn = localStorage.getItem("isLoggedIn"); 
+            const userName = localStorage.getItem("userName"); 
+
+            if (isLoggedIn === "true" && userName && loginBtn) {
+                loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
+                loginBtn.href = "#"; 
+                loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
+            }
+            
+            // Fungsi untuk menghitung dan menampilkan total
+            function updateSummary(currentSubtotal) {
+                const grandTotal = currentSubtotal + SHIPPING_COST;
+                subtotalDisplay.textContent = "Rp" + currentSubtotal.toLocaleString("id-ID");
+                totalGrandDisplay.textContent = "Rp" + grandTotal.toLocaleString("id-ID");
+            }
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<div class="p-8 bg-white rounded-xl shadow-lg text-center text-gray-500 font-medium"><p>Keranjang belanja Anda kosong. Yuk, cari produk favorit Anda!</p></div>';
+                updateSummary(0);
+                checkoutBtn.disabled = true;
+                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            let subtotal = 0;
+
+            cart.forEach(item => {
+                const totalHarga = item.price * item.quantity;
+                subtotal += totalHarga;
+
+                const itemEl = document.createElement("div");
+                // Class Tailwind untuk tampilan kartu keranjang yang elegan
+                itemEl.classList.add("cart-card", "bg-white", "p-4", "rounded-xl", "shadow-lg", "flex", "space-x-4", "items-center", "border", "border-pink-100");
+                
+                itemEl.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-md flex-shrink-0" onerror="this.onerror=null;this.src='https://placehold.co/80x80/f0abfc/701a75?text=Img';" />
+                    <div class="flex-grow">
+                        <h4 class="text-lg font-semibold text-gray-800">${item.name}</h4>
+                        <p class="text-sm text-gray-500">Ukuran: ${item.size}</p>
+                        <p class="text-sm text-gray-500">Harga Satuan: Rp${item.price.toLocaleString("id-ID")}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <p class="text-md text-gray-700">Jumlah: <span class="font-medium">${item.quantity}</span></p>
+                        <p class="text-xl font-bold text-pink-600 mt-1">Rp${totalHarga.toLocaleString("id-ID")}</p>
+                    </div>
+                `;
+                cartContainer.appendChild(itemEl);
+            });
+
+            // Update ringkasan total setelah semua item dirender
+            updateSummary(subtotal);
+
+            // Perbaikan: Ganti alert/confirm dengan logging console (sesuai aturan Canvas)
+            clearCartBtn.addEventListener("click", () => {
+                console.log("Keranjang dikosongkan.");
+                localStorage.removeItem("cart");
+                location.reload();
+            });
+
+            checkoutBtn.addEventListener("click", () => {
+                sessionStorage.setItem("cartItems", JSON.stringify(cart));
+                window.location.href = "checkout.html";
+            });
+        });
+    </script>
 </body>
 </html>
+  
