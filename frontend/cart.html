@@ -4,9 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Keranjang - Glamora</title>
-    <!-- Memuat Tailwind CSS CDN (seperti di index.html) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Playfair Display (judul) dan Poppins (teks) -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         /* Menggunakan Poppins sebagai default, Playfair untuk judul */
@@ -40,7 +38,6 @@
 </head>
 <body class="min-h-screen">
 
-    <!-- Navbar (Diperbarui dengan logo gambar dan struktur dari acuan) -->
     <header class="bg-white shadow-md sticky top-0 z-10">
         <nav class="container mx-auto p-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center">
@@ -57,21 +54,15 @@
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto p-6 md:p-8">
-        <!-- Ukuran font H1 dipertahankan pada 'text-4xl' sesuai acuan -->
         <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Shopping Cart</h1>
 
         <div class="cart-layout">
-            <!-- Produk di Keranjang -->
             <section class="space-y-4">
                 <div id="cartItems">
-                    <!-- Item cart akan dimuat di sini -->
-                </div>
+                    </div>
     
-                <!-- Cart Actions -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 mt-6 bg-white rounded-xl shadow-md border border-gray-100">
-                    <!-- Ukuran font dipertahankan pada 'text-pink-600 font-medium' -->
                     <a href="category.html" class="text-pink-600 hover:text-pink-700 font-medium mb-4 sm:mb-0">
                         <span class="text-2xl mr-2">←</span> Lanjut Belanja
                     </a>
@@ -86,33 +77,23 @@
                 </div>
             </section>
     
-            <!-- Ringkasan Pesanan -->
             <aside class="h-fit bg-white p-6 rounded-xl shadow-2xl border-t-4 border-pink-600">
-                <!-- Ukuran font H3 dipertahankan pada 'text-2xl' sesuai acuan -->
                 <h3 class="text-2xl font-playfair font-bold mb-4 text-gray-800">Order Summary</h3>
                 <div class="space-y-3 border-b pb-4 mb-4">
-                    <!-- Ukuran font dipertahankan pada 'text-lg' sesuai acuan -->
                     <div class="flex justify-between text-lg text-gray-600">
                         <span>Subtotal Barang:</span>
                         <strong id="subtotalDisplay" class="text-gray-800">Rp0</strong>
                     </div>
-                    <!-- Ukuran font dipertahankan pada 'text-lg' sesuai acuan -->
-                    <div class="flex justify-between text-lg text-gray-600">
-                        <span>Pengiriman:</span>
-                        <strong class="text-gray-800">Rp20.000</strong>
-                    </div>
                 </div>
-                <!-- Ukuran font dipertahankan pada 'text-xl' sesuai acuan -->
                 <div class="flex justify-between text-xl font-bold text-gray-900">
-                    <span>Total Keseluruhan:</span>
-                    <strong id="totalGrandDisplay" class="text-pink-600">Rp20.000</strong>
+                    <span>Total Pembayaran:</span>
+                    <strong id="totalGrandDisplay" class="text-pink-600">Rp0</strong>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Biaya pengiriman tetap (flat rate).</p>
+                <p class="text-xs text-gray-500 mt-2">Total ini belum termasuk biaya kirim.</p>
             </aside>
         </div>
     </main>
 
-    <!-- Footer Sederhana -->
     <footer class="bg-gray-800 text-white p-6 mt-12">
         <div class="container mx-auto text-center">
             <p>&copy; 2024 Glamora. All rights reserved.</p>
@@ -120,7 +101,7 @@
     </footer>
 
     <script>
-        const SHIPPING_COST = 20000; // Biaya pengiriman tetap
+        // const SHIPPING_COST = 20000; // DIHAPUS
 
         document.addEventListener("DOMContentLoaded", function () {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -144,7 +125,8 @@
             
             // Fungsi untuk menghitung dan menampilkan total
             function updateSummary(currentSubtotal) {
-                const grandTotal = currentSubtotal + SHIPPING_COST;
+                // HANYA MENGGUNAKAN SUBTOTAL SEBAGAI TOTAL KESELURUHAN
+                const grandTotal = currentSubtotal; 
                 subtotalDisplay.textContent = "Rp" + currentSubtotal.toLocaleString("id-ID");
                 totalGrandDisplay.textContent = "Rp" + grandTotal.toLocaleString("id-ID");
             }
@@ -185,15 +167,16 @@
             // Update ringkasan total setelah semua item dirender
             updateSummary(subtotal);
 
-            // Perbaikan: Ganti alert/confirm dengan logging console (sesuai aturan Canvas)
+            // Event Listener untuk Clear Cart
             clearCartBtn.addEventListener("click", () => {
                 console.log("Keranjang dikosongkan.");
                 localStorage.removeItem("cart");
                 location.reload();
             });
 
+            // Event Listener untuk Checkout (memastikan data yang benar dikirim)
             checkoutBtn.addEventListener("click", () => {
-                sessionStorage.setItem("cartItems", JSON.stringify(cart));
+                sessionStorage.setItem("cartItems", JSON.stringify(cart)); // Menggunakan cartItems untuk kompatibilitas
                 window.location.href = "checkout.html";
             });
         });

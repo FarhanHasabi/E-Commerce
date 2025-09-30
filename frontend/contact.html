@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact - Glamora</title>
-  <!-- Memuat Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Playfair Display (judul) dan Poppins (teks) -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   
   <style>
@@ -33,117 +31,170 @@
   </style>
 </head>
 <body>
-  <!-- Navbar (Diambil dari category.html) -->
   <header class="bg-white shadow-md sticky top-0 z-10">
-      <nav class="container mx-auto p-4 flex justify-between items-center">
-          <!-- Logo -->
-          <a href="index.html" class="flex items-center">
-              <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
-          </a>
-          <!-- Navigasi -->
-          <ul class="flex space-x-6 text-sm font-medium">
-              <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
-              <li><a href="category.html" class="text-gray-700 hover:text-pink-600 transition">Category</a></li>
-              <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
-              <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
-              <li><a href="contact.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600">Contact</a></li>
-              <li><a href="login.html" class="bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition shadow-lg" id="loginBtn">Login</a></li>
-          </ul>
-      </nav>
+    <nav class="container mx-auto p-4 flex justify-between items-center">
+        <a href="index.html" class="flex items-center">
+            <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
+        </a>
+        <ul class="flex space-x-6 text-sm font-medium">
+            <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
+            <li><a href="category.html" class="text-gray-700 hover:text-pink-600 transition">Category</a></li>
+            <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
+            <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
+            <li><a href="contact.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600">Contact</a></li>
+            <li><a href="login.html" class="bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition shadow-lg" id="loginBtn">Login</a></li>
+        </ul>
+    </nav>
   </header>
 
-  <!-- Contact Section -->
-  <main class="container mx-auto p-6 md:p-8">
-    <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-4 text-center">Hubungi Kami</h1>
-    <p class="text-center text-gray-500 mb-10">Kami siap mendengarkan saran, pertanyaan, atau umpan balik Anda.</p>
+  <main class="container mx-auto p-6 md:p-8 flex-grow">
+    <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Hubungi Kami</h1>
 
-    <div class="contact-layout max-w-5xl mx-auto">
-        <!-- Contact Form -->
-        <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-pink-100">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-5">Kirim Pesan</h2>
-            <form class="space-y-4" id="contactForm">
-                <input type="text" placeholder="Nama Anda" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required>
-                <input type="email" placeholder="Email Anda" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required>
-                <textarea rows="5" placeholder="Pesan Anda..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required></textarea>
-                <button type="submit" class="w-full py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition shadow-lg">
+    <div class="contact-layout">
+        <div class="info-section p-6 bg-white rounded-xl shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Informasi Kontak</h2>
+            <div class="space-y-4 text-gray-700">
+                <div class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <div>
+                        <p class="font-semibold">Alamat Kantor</p>
+                        <p>Jl. Fesyen Raya No. 123, Kota Glam, Indonesia</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.128a11.037 11.037 0 006.425 6.425l1.128-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <div>
+                        <p class="font-semibold">Telepon & WhatsApp</p>
+                        <p>+62 812-3456-7890</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-600 mr-3 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <div>
+                        <p class="font-semibold">Email</p>
+                        <p>support@glamora.id</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Jam Operasional</h3>
+                <p class="text-gray-700">Senin - Jumat: 09:00 - 17:00 WIB</p>
+                <p class="text-gray-700">Sabtu: 09:00 - 14:00 WIB</p>
+                <p class="text-gray-700">Minggu/Libur Nasional: Tutup</p>
+            </div>
+        </div>
+
+        <div class="form-section p-6 bg-white rounded-xl shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Kirim Pesan</h2>
+            <form id="contactForm" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="name" name="name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:border-pink-500 focus:ring-pink-500">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:border-pink-500 focus:ring-pink-500">
+                </div>
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-700">Pesan Anda</label>
+                    <textarea id="message" name="message" rows="4" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:border-pink-500 focus:ring-pink-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 px-4 border border-transparent rounded-lg shadow-md text-lg font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition">
                     Kirim Pesan
                 </button>
             </form>
-        </section>
-
-        <!-- Info Blocks -->
-        <div class="contact-info space-y-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-5 lg:block hidden">Informasi Kontak</h2>
-
-            <div class="info-box bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                <h4 class="text-xl font-bold text-pink-600 mb-2 flex items-center">
-                    <span class="mr-2 text-3xl">📍</span> Alamat Kami
-                </h4>
-                <p class="text-gray-700">Jl. Bunga Coklat No.12<br>Malang, Jawa Timur 65142</p>
-            </div>
-            
-            <div class="info-box bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                <h4 class="text-xl font-bold text-pink-600 mb-2 flex items-center">
-                    <span class="mr-2 text-3xl">📞</span> Telepon
-                </h4>
-                <p class="text-gray-700">(+62) 812-3456-7890</p>
-            </div>
-
-            <div class="info-box bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                <h4 class="text-xl font-bold text-pink-600 mb-2 flex items-center">
-                    <span class="mr-2 text-3xl">📧</span> Email
-                </h4>
-                <p class="text-gray-700">support@glamora.id</p>
-            </div>
         </div>
     </div>
   </main>
-      <!-- Footer Sederhana -->
-    <footer class="bg-gray-800 text-white p-6 mt-12">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024 Glamora. All rights reserved.</p>
-        </div>
-    </footer>
-  <!-- Script: Form Submission Handling -->
-  <script>
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Ambil data form (simulasi)
-        const name = this.querySelector('input[type="text"]').value;
-        const email = this.querySelector('input[type="email"]').value;
-        const message = this.querySelector('textarea').value;
-        
-        // Simulasikan pengiriman berhasil
-        const successMessage = document.createElement('div');
-        successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-xl transition-opacity duration-300';
-        successMessage.textContent = `Terima kasih, ${name}! Pesan Anda telah terkirim.`;
-        
-        document.body.appendChild(successMessage);
-        
-        // Bersihkan form
-        this.reset();
-        
-        // Hilangkan pesan setelah 4 detik
-        setTimeout(() => {
-            successMessage.classList.add('opacity-0');
-            setTimeout(() => successMessage.remove(), 500);
-        }, 4000);
-    });
-    
-    // Cek status login di Navbar
-    document.addEventListener("DOMContentLoaded", function () {
-        const loginBtn = document.getElementById("loginBtn");
-        // Menggunakan localStorage
-        const isLoggedIn = localStorage.getItem("isLoggedIn"); 
-        const userName = localStorage.getItem("userName"); 
 
-        if (isLoggedIn === "true" && userName && loginBtn) {
-            loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
-            loginBtn.href = "#"; 
-            loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
-            loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
+  <footer class="bg-gray-800 text-white p-6 mt-12">
+    <div class="container mx-auto text-center">
+        <p>&copy; 2024 Glamora. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // --- Logika Autentikasi dan Navbar ---
+        function handleLogout(e) {
+            e.preventDefault();
+            // Menghapus status login dari LocalStorage
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userName");
+            
+            alert("Anda berhasil logout.");
+            window.location.reload(); 
         }
+
+        function updateAuthStatus() {
+            const loginBtn = document.getElementById("loginBtn");
+            if (!loginBtn) return;
+            
+            // Cek status dari LocalStorage (untuk simulasi login non-supabase)
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            const userName = localStorage.getItem("userName");
+
+            if (isLoggedIn && userName) {
+                // Tampilan saat sudah login (Tombol Logout)
+                loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
+                loginBtn.href = "#"; // Menggunakan '#' agar tidak navigasi
+                loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
+                
+                // Tambahkan event listener untuk memanggil fungsi handleLogout
+                // Menghapus dan menambahkan event listener baru untuk menghindari duplikasi
+                loginBtn.removeEventListener('click', handleLogout); 
+                loginBtn.addEventListener('click', handleLogout); 
+                
+            } else {
+                // Tampilan saat belum login (Tombol Login)
+                loginBtn.textContent = `Login`; 
+                loginBtn.href = "login.html";
+                loginBtn.classList.add('bg-pink-500', 'hover:bg-pink-600');
+                loginBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                loginBtn.removeEventListener('click', handleLogout); // Pastikan listener logout dihapus
+            }
+        }
+        // --- Akhir Logika Autentikasi dan Navbar ---
+        
+        // Panggil updateAuthStatus saat DOM siap
+        updateAuthStatus();
+        
+        // Logika Form Kontak
+        const contactForm = document.getElementById('contactForm');
+        contactForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = this.querySelector('input[type="text"]').value;
+            const email = this.querySelector('input[type="email"]').value;
+            const message = this.querySelector('textarea').value;
+            
+            // Simulasikan pengiriman berhasil
+            const successMessage = document.createElement('div');
+            successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-xl transition-opacity duration-300';
+            successMessage.textContent = `Terima kasih, ${name}! Pesan Anda telah terkirim.`;
+            
+            document.body.appendChild(successMessage);
+            
+            // Bersihkan form
+            this.reset();
+            
+            // Hilangkan pesan setelah 4 detik
+            setTimeout(() => {
+                successMessage.classList.add('opacity-0');
+                setTimeout(() => successMessage.remove(), 500);
+            }, 4000);
+        });
+        
     });
   </script>
 </body>

@@ -152,27 +152,37 @@
         const supabase = createClient(supabaseUrl, supabaseKey);
         
         // --- Logika Autentikasi dan Navbar ---
-        async function updateAuthStatus() {
+        function updateAuthStatus() {
             const loginBtn = document.getElementById("loginBtn");
+            if (!loginBtn) return;
             
             // Cek status dari LocalStorage (untuk simulasi login non-supabase)
             const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
             const userName = localStorage.getItem("userName");
 
-            if (isLoggedIn && userName && loginBtn) {
+            if (isLoggedIn && userName) {
+                // Tampilan saat sudah login (Tombol Logout)
                 loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
-                loginBtn.href = "#"; 
+                loginBtn.href = "#"; // Menggunakan '#' agar tidak navigasi
                 loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
                 loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
-                loginBtn.onclick = handleLogout; 
-            } else if (loginBtn) {
+                
+                // Tambahkan event listener untuk memanggil fungsi handleLogout
+                // Gunakan addEventListener untuk menghindari penimpaan event lain
+                loginBtn.onclick = null; // Hapus onclick lama jika ada
+                loginBtn.addEventListener('click', handleLogout, { once: true }); 
+                
+            } else {
+                // Tampilan saat belum login (Tombol Login)
                 loginBtn.textContent = `Login`; 
                 loginBtn.href = "login.html";
                 loginBtn.classList.add('bg-pink-500', 'hover:bg-pink-600');
                 loginBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
-                loginBtn.onclick = null;
+                loginBtn.onclick = null; // Pastikan tidak ada onclick yang tersisa
             }
         }
+        
+        // --- Akhir Logika Autentikasi dan Navbar ---
         
         function handleLogout(e) {
             e.preventDefault();

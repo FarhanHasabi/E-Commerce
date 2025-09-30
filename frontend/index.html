@@ -100,57 +100,51 @@
 
 
     <script type="module">
-        // --- Supabase Setup (Diambil dari category.html) ---
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+        // [PERTAMA]: FUNGSI LOGOUT DAN STATUS LOGIN
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userName");
+            alert("Anda berhasil logout.");
+            window.location.href = "index.html"; 
+        }
 
-        // PENTING: KREDENSIAL DI BAWAH INI ADALAH YANG ANDA BERIKAN.
-        // Kunci yang diawali 'sb_secret_' *TIDAK BOLEH* digunakan di klien/browser karena itu adalah Service Role Key (RAHASIA).
-        // Harap ganti dengan Anon Public Key Supabase Anda yang benar.
-        const SUPABASE_URL = 'https://fkjymlvgbefpsmeqhavs.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZranltbHZnYmVmcHNtZXFoYXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NjA2NzksImV4cCI6MjA3NDAzNjY3OX0.kUO1tjQgMfwIGJAxNT6U94lvqFVsAzPqDbfezXOIkmY'; // ⚠️ HARAP GANTI DENGAN KUNCI PUBLIK (Anon) ANDA!
-        
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // --- State dan Konstanta ---
-        let currentSlide = 0;
-        const SLIDE_INTERVAL = 5000; 
-        const MAX_PRODUCTS = 5; 
-        let carouselTimer;
-        
-        const placeholderProducts = [
-            { id: 1, name: "Gaun Pesta Mewah (Demo)", price: 750000, description: "Pilihan eksklusif dengan desain yang elegan dan kualitas bahan premium.", image: "https://placehold.co/500x700/fbcfe8/be185d?text=Gaun+Pesta" },
-            { id: 2, name: "Kemeja Lengan Panjang (Demo)", price: 320000, description: "Pilihan eksklusif dengan desain yang elegan dan kualitas bahan premium.", image: "https://placehold.co/500x700/bfdbfe/1d4ed8?text=Kemeja+Pria" },
-            { id: 3, name: "Rok Mini Anak (Demo)", price: 150000, description: "Pilihan eksklusif dengan desain yang elegan dan kualitas bahan premium.", image: "https://placehold.co/500x700/99f6e4/0d9488?text=Rok+Anak" },
-            { id: 4, name: "Sweater Musim Dingin (Demo)", price: 450000, description: "Pilihan eksklusif dengan desain yang elegan dan kualitas bahan premium.", image: "https://placehold.co/500x700/fee2e2/991b1b?text=Sweater" },
-            { id: 5, name: "Jeans Wanita Gaya (Demo)", price: 550000, description: "Pilihan eksklusif dengan desain yang elegan dan kualitas bahan premium.", image: "https://placehold.co/500x700/fecaca/dc2626?text=Jeans+Wanita" }
-        ];
-
-        // --- Logika Autentikasi dan Navbar ---
-        
-        function updateAuthStatus() {
+        document.addEventListener("DOMContentLoaded", function () {
             const loginBtn = document.getElementById("loginBtn");
             const isLoggedIn = localStorage.getItem("isLoggedIn"); 
             const userName = localStorage.getItem("userName"); 
 
             if (isLoggedIn === "true" && userName && loginBtn) {
+                // Saat sudah login
                 loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
-                loginBtn.href = "#"; 
+                loginBtn.href = "#"; // Tautan akan ditangani oleh event listener
                 loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
                 loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
+                
+                // Event listener untuk LOGOUT
+                loginBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    logout();
+                });
             }
-        }
+            // Jika belum login, biarkan atribut default di HTML tetap login.html
+        });
         
-        // --- Logika Carousel (Tidak Berubah) ---
+        // [KEDUA]: LOGIKA CAROUSEL (Dipertahankan)
+        let currentSlide = 0;
+        const SLIDE_INTERVAL = 5000; 
+        const MAX_PRODUCTS = 5; 
+        let carouselTimer;
+        const API_BASE_URL = window.location.origin;
+
+        // ... (Fungsi updateCarousel, startCarouselAutoPlay, setupCarouselControls, createProductCard, dan fetchProducts dipertahankan dari kode Anda sebelumnya)
         
         function updateCarousel(track, totalSlides) {
             if (totalSlides === 0) return;
-
             if (currentSlide >= totalSlides) {
                 currentSlide = 0;
             } else if (currentSlide < 0) {
                 currentSlide = totalSlides - 1;
             }
-
             const offset = -currentSlide * 100;
             track.style.transform = `translateX(${offset}%)`;
         }
@@ -186,16 +180,12 @@
             if (totalSlides <= 1) {
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'none';
-            } else {
-                 prevBtn.style.display = 'block';
-                 nextBtn.style.display = 'block';
             }
         }
-
+        
         function createProductCard(product) {
             const card = document.createElement('div');
             card.className = 'carousel-item flex flex-col md:flex-row items-center p-8';
-            
             const imageUrl = product.image || `https://placehold.co/500x700/f0abfc/701a75?text=${product.name ? product.name.substring(0, 1).toUpperCase() : 'P'}`;
             const priceFormatted = (product.price || 0).toLocaleString('id-ID');
 
@@ -220,77 +210,50 @@
             return card;
         }
 
-        // --- Logika Fetch Supabase (Modifikasi) ---
-        
         async function fetchProducts() {
             const track = document.getElementById('product-carousel-track');
             const loadingIndicator = document.getElementById('loading-indicator');
-            loadingIndicator.style.display = 'flex'; // Tampilkan loading indicator
 
             try {
-                // Mengambil semua data dari tabel 'products'
-                const { data, error } = await supabase
-                    .from('products') 
-                    .select('*'); 
+                const apiUrl = `${API_BASE_URL}/api/products`;
+                const response = await fetch(apiUrl);
                 
-                if (error) {
-                    throw new Error(error.message);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const allProducts = data || [];
-                
-                // 1. Logika Randomisasi dan Pembatasan Data (Hanya ambil 5)
+                const allProducts = await response.json();
                 const shuffled = allProducts.sort(() => 0.5 - Math.random());
                 const randomProducts = shuffled.slice(0, MAX_PRODUCTS);
                 
-                loadingIndicator.style.display = 'none';
+                loadingIndicator.remove();
                 track.innerHTML = ''; 
 
                 if (randomProducts.length === 0) {
-                    track.innerHTML = '<p class="carousel-item w-full flex justify-center py-20 text-gray-500 text-lg">Tidak ada produk yang ditemukan di tabel **products** Supabase.</p>';
+                    track.innerHTML = '<p class="col-span-full text-center text-xl text-red-500 py-10">Tidak ada produk yang ditemukan untuk carousel.</p>';
                     return;
                 }
 
-                // 2. Render Produk ke Carousel
                 randomProducts.forEach(product => {
                     const productCard = createProductCard(product);
                     track.appendChild(productCard);
                 });
 
-                // 3. Setup Carousel
                 const totalSlides = randomProducts.length;
                 updateCarousel(track, totalSlides);
                 setupCarouselControls(track, totalSlides);
-                startCarouselAutoPlay(track, totalSlides); 
+                startCarouselAutoPlay(track, totalSlides);
+                
 
             } catch (error) {
-                console.error("Gagal mengambil produk dari Supabase:", error); 
-                
-                // Fallback ke data demo
-                loadingIndicator.style.display = 'none';
-                track.innerHTML = '';
-                track.innerHTML = `<p class="carousel-item w-full flex justify-center py-20 text-red-500 text-lg font-semibold">
-                    ⚠️ Gagal memuat data dari Supabase: ${error.message}. Menggunakan data demo.
-                </p>`;
-
-                const demoProducts = placeholderProducts.slice(0, MAX_PRODUCTS);
-                 demoProducts.forEach(product => {
-                    const productCard = createProductCard(product);
-                    track.appendChild(productCard);
-                });
-
-                const totalSlides = demoProducts.length;
-                updateCarousel(track, totalSlides);
-                setupCarouselControls(track, totalSlides);
-                startCarouselAutoPlay(track, totalSlides);
+                console.error("Gagal mengambil produk:", error); 
+                loadingIndicator.textContent = `Gagal memuat data: ${error.message}. Coba periksa koneksi ke server Flask.`;
+                loadingIndicator.classList.add('text-red-500', 'font-semibold');
             }
         }
 
-        // Jalankan fungsi saat halaman selesai dimuat
-        document.addEventListener("DOMContentLoaded", () => {
-             updateAuthStatus(); // Update status login di navbar
-             fetchProducts(); // Ambil data produk
-        });
+        window.onload = fetchProducts;
+
     </script>
 
 </body>
