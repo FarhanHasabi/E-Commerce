@@ -77,10 +77,10 @@
             
             <div class="relative w-full max-w-lg mb-4 lg:mb-0">
                 <input type="text" placeholder="Search Products..." 
-                       class="search-input w-full p-3 pl-10 border-2 border-pink-300 rounded-full 
-                              focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition shadow-md" 
-                       id="searchInput"
-                       aria-label="Cari Produk">
+                        class="search-input w-full p-3 pl-10 border-2 border-pink-300 rounded-full 
+                            focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition shadow-md" 
+                        id="searchInput"
+                        aria-label="Cari Produk">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                 </svg>
@@ -146,19 +146,20 @@
         const PLACEHOLDER_URL = 'https://fkjymlvgbefpsmeqhavs.supabase.co'; // Ganti dengan URL Anda
         const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZranltbHZnYmVmcHNtZXFoYXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NjA2NzksImV4cCI6MjA3NDAzNjY3OX0.kUO1tjQgMfwIGJAxNT6U94lvqFVsAzPqDbfezXOIkmY'; // Ganti dengan Anon Public Key Anda
         
-
         const supabaseUrl = typeof __supabase_url !== 'undefined' ? __supabase_url : PLACEHOLDER_URL;
         const supabaseKey = typeof __supabase_key !== 'undefined' ? __supabase_key : PLACEHOLDER_KEY;
         
         const supabase = createClient(supabaseUrl, supabaseKey);
         
-        // --- Logika Autentikasi dan Navbar (BARU) ---
+        // --- Logika Autentikasi dan Navbar ---
         async function updateAuthStatus() {
             const loginBtn = document.getElementById("loginBtn");
-            const { data: { user } } = await supabase.auth.getUser();
+            
+            // Cek status dari LocalStorage (untuk simulasi login non-supabase)
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            const userName = localStorage.getItem("userName");
 
-            if (user && loginBtn) {
-                const userName = user.user_metadata.name || user.email.split('@')[0];
+            if (isLoggedIn && userName && loginBtn) {
                 loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
                 loginBtn.href = "#"; 
                 loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
@@ -173,16 +174,17 @@
             }
         }
         
-        async function handleLogout(e) {
+        function handleLogout(e) {
             e.preventDefault();
-            const { error } = await supabase.auth.signOut();
+            // Asumsi logout ini hanya mengurus LocalStorage karena login.html tidak menggunakan Supabase Auth
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userName");
             
-            if (!error) {
-                alert("Anda berhasil logout.");
-                localStorage.removeItem("isLoggedIn");
-                localStorage.removeItem("userName");
-                window.location.reload(); 
-            }
+            // Opsional: Jika Anda menggunakan Supabase, Anda bisa memanggil:
+            // supabase.auth.signOut().then(() => { ... })
+            
+            alert("Anda berhasil logout.");
+            window.location.reload(); 
         }
         // --- Akhir Logika Autentikasi dan Navbar ---
 
@@ -223,9 +225,9 @@
         const delay = ms => new Promise(res => setTimeout(res, ms));
 
 
-        // --- FUNGSI KERANJANG BARU ---
+        // --- FUNGSI KERANJANG & CEK LOGIN ---
         
-/**
+        /**
          * Mendapatkan data produk minimum dari objek produk Supabase/placeholder
          * untuk ditambahkan ke keranjang.
          */
@@ -248,8 +250,18 @@
 
         /**
          * Menambahkan produk ke keranjang belanja (localStorage)
+         * 🚨 DILINDUNGI CEK LOGIN
          */
         function addToCart(product) {
+            // Cek status login
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            
+            if (!isLoggedIn) {
+                alert("Anda harus login terlebih dahulu untuk memasukkan produk ke keranjang.");
+                window.location.href = "login.html";
+                return;
+            }
+            
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
             const newItem = getCartItemData(product);
 
@@ -272,8 +284,18 @@
 
         /**
          * Mengarahkan produk langsung ke checkout (menimpa sessionStorage untuk checkout)
+         * 🚨 DILINDUNGI CEK LOGIN
          */
         function checkoutNow(product) {
+            // Cek status login
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+            if (!isLoggedIn) {
+                alert("Anda harus login terlebih dahulu untuk melakukan checkout.");
+                window.location.href = "login.html";
+                return;
+            }
+
             // Membuat keranjang sementara hanya berisi produk ini
             const checkoutCart = [getCartItemData(product)];
             
@@ -285,7 +307,7 @@
         }
 
 
-        // --- FUNGSI UTAMA FETCH & RENDER (MODIFIKASI RANGE) ---
+        // --- FUNGSI UTAMA FETCH & RENDER ---
 
         async function fetchProducts(tableName, sortBy, page, searchTerm = '', maxRetries = 3) {
             
@@ -369,7 +391,7 @@
         }
 
         /**
-         * Merender array produk ke dalam grid HTML (MODIFIKASI: TOMBOL)
+         * Merender array produk ke dalam grid HTML
          */
         function renderProducts(products, isPlaceholder = false) {
             productGrid.innerHTML = ''; 
@@ -397,6 +419,7 @@
                 const sku = product.sku || product.id || 'default';
 
                 // Simpan data produk yang diperlukan ke dalam atribut data-product untuk event listener
+                // Escape apostrophe for HTML attribute safety
                 const productDataAttr = `data-product='${JSON.stringify({ 
                     id: product.id || product.sku, 
                     name: product.name, 
@@ -453,6 +476,7 @@
                     const simpleProduct = JSON.parse(dataAttr.replace(/&apos;/g, "'"));
                     const fullProduct = productMap[simpleProduct.id || simpleProduct.sku];
                     if (fullProduct) {
+                         // Panggil fungsi addToCart (dengan cek login di dalamnya)
                          addToCart(fullProduct);
                     }
                 });
@@ -464,6 +488,7 @@
                     const simpleProduct = JSON.parse(dataAttr.replace(/&apos;/g, "'"));
                     const fullProduct = productMap[simpleProduct.id || simpleProduct.sku];
                     if (fullProduct) {
+                         // Panggil fungsi checkoutNow (dengan cek login di dalamnya)
                          checkoutNow(fullProduct);
                     }
                 });
@@ -486,8 +511,11 @@
             pageInfo.textContent = `Page ${currentPage + 1}`;
         }
         
+        /**
+         * FUNGSI CORRECTED: Wrapper untuk memuat produk dengan state saat ini (tabel, sort, halaman, search)
+         */
         function loadCurrentProducts() {
-            const searchTerm = searchInput.value.toLowerCase();
+            const searchTerm = searchInput.value.trim();
             fetchProducts(currentTable, currentSort, currentPage, searchTerm);
         }
 
@@ -511,8 +539,9 @@
         }
 
         searchInput.addEventListener('keyup', (e) => {
-            if (e.key !== 'Enter') {
-                handleSearchFilter();
+            // Hanya muat ulang saat enter, atau jika user berhenti mengetik (debounce logic is better but this is simpler)
+            if (e.key === 'Enter') {
+                 handleSearchFilter();
             }
         });
         
@@ -522,6 +551,13 @@
                 handleSearchFilter(); 
                 searchInput.blur(); 
             }
+        });
+        
+        // Event Listener untuk Sort Filter
+        sortFilter.addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            currentPage = 0; 
+            loadCurrentProducts();
         });
 
         // Event Listener untuk Sidebar Kategori
@@ -552,17 +588,10 @@
                 loadCurrentProducts();
             }
         });
-
-        // Event Listener untuk Sort Filter
-        sortFilter.addEventListener('change', (e) => {
-            currentSort = e.target.value;
-            currentPage = 0; 
-            loadCurrentProducts();
-        });
         
         // --- On Load Setup ---
         
-        // 1. Inisialisasi status login (BARU: Menggunakan Supabase)
+        // 1. Inisialisasi status login
         updateAuthStatus(); 
 
         // 2. Muat produk default ('products') saat halaman dimuat

@@ -39,12 +39,7 @@
       user-select: none;
       font-size: 0.875rem; /* text-sm */
     }
-    /* Class tambahan untuk menyembunyikan elemen */
-    .hidden {
-        display: none !important;
-    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="flex flex-col">
   <header class="bg-white shadow-md sticky top-0 z-10">
@@ -58,113 +53,67 @@
               <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
               <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
               <li><a href="contact.html" class="text-gray-700 hover:text-pink-600 transition">Contact</a></li>
-              <li><a href="login.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600" id="loginBtn">Login</a></li>
+              <li><a href="login.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600">Login</a></li>
           </ul>
       </nav>
   </header>
 
   <main class="login-container flex-grow">
     <section class="login-box w-full max-w-md bg-white p-8 md:p-10 rounded-xl shadow-2xl border-t-4 border-pink-500">
+      <h2 class="text-3xl font-playfair font-bold text-gray-800 mb-2 text-center">Welcome Back</h2>
+      <p class="text-center text-gray-500 mb-8">Log in to your account to continue shopping.
+</p>
       
-      <div id="authContainer">
-          <h2 class="text-3xl font-playfair font-bold text-gray-800 mb-2 text-center" id="formTitle">Welcome Back</h2>
-          <p class="text-center text-gray-500 mb-8" id="formSubtitle">Log in to your account to continue shopping.</p>
-          
-          <form class="space-y-5" id="loginForm">
-            
-            <div>
-              <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name:</label>
-              <input type="text" id="name" placeholder="Your username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required />
-            </div>
+      <form class="space-y-5" id="loginForm">
+        
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name:</label>
+          <input type="text" id="name" placeholder="Your username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required />
+        </div>
 
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email:</label>
-              <input type="email" id="email" placeholder="ex@gmail.com" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required>
-            </div>
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email:</label>
+          <input type="email" id="email" placeholder="ex@gmail.com" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required>
+        </div>
 
-            <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password:</label>
-              <div class="password-field">
-                <input type="password" id="password" placeholder="Input your password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 pr-12" required>
-                <span class="toggle-password" id="togglePassword">Show</span>
-              </div>
-            </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password:</label>
+          <div class="password-field">
+            <input type="password" id="password" placeholder="Input your password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 pr-12" required>
+            <span class="toggle-password" id="togglePassword">Show</span>
+          </div>
+        </div>
 
-            <div class="flex justify-between items-center text-sm">
-              <label class="flex items-center space-x-2 text-gray-600">
-                <input type="checkbox" class="rounded text-pink-500 focus:ring-pink-500">
-                <span>Ingat saya</span>
-              </label>
-              <a href="#" class="text-pink-500 hover:text-pink-700 transition">Lupa password?</a>
-            </div>
+        <div class="flex justify-between items-center text-sm">
+          <label class="flex items-center space-x-2 text-gray-600">
+            <input type="checkbox" class="rounded text-pink-500 focus:ring-pink-500">
+            <span>Ingat saya</span>
+          </label>
+          <a href="#" class="text-pink-500 hover:text-pink-700 transition">Lupa password?</a>
+        </div>
 
-            <button type="submit" class="w-full py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition shadow-lg">
-              Masuk / Daftar &rarr;
-            </button>
-          </form>
+        <button type="submit" class="w-full py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition shadow-lg">
+          Masuk &rarr;
+        </button>
+      </form>
 
-          <p class="text-center text-sm mt-6 text-gray-600">
-              Belum punya akun? <a href="#" class="text-pink-600 hover:underline font-medium">Daftar sekarang</a>
-          </p>
-      </div>
-
-      <div id="otpContainer" class="hidden">
-          <h2 class="text-3xl font-playfair font-bold text-gray-800 mb-2 text-center">Verifikasi Akun</h2>
-          <p class="text-center text-gray-500 mb-8" id="otpInstruction">Masukkan kode 6 digit yang kami kirimkan ke email Anda.</p>
-          
-          <form class="space-y-5" id="otpForm">
-              
-              <div>
-                <label for="otp_code" class="block text-sm font-medium text-gray-700 mb-1">Kode OTP:</label>
-                <input type="text" id="otp_code" placeholder="123456" maxlength="6" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required />
-              </div>
-
-              <button type="submit" class="w-full py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition shadow-lg">
-                Verifikasi & Masuk &rarr;
-              </button>
-              <p class="text-center text-sm mt-4">
-                <a href="#" id="resendOtp" class="text-pink-600 hover:underline font-medium">Kirim Ulang Kode</a>
-              </p>
-          </form>
-      </div>
-
+      <p class="text-center text-sm mt-6 text-gray-600">
+          Belum punya akun? <a href="signup.html" class="text-pink-600 hover:underline font-medium">Daftar sekarang</a>
+      </p>
     </section>
   </main>
 
   <script>
-    // GANTI DENGAN KUNCI PROYEK ANDA
-    const SUPABASE_URL = 'https://fkjymlvgbefpsmeqhavs.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZranltbHZnYmVmcHNtZXFoYXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NjA2NzksImV4cCI6MjA3NDAzNjY3OX0.kUO1tjQgMfwIGJAxNT6U94lvqFVsAzPqDbfezXOIkmY';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     document.addEventListener("DOMContentLoaded", function () {
       const loginForm = document.getElementById("loginForm");
-      const otpForm = document.getElementById("otpForm");
       const togglePassword = document.getElementById("togglePassword");
       const passwordField = document.getElementById("password");
-      const loginContainer = document.getElementById("authContainer");
-      const otpContainer = document.getElementById("otpContainer");
       
-      let currentEmail = ''; 
-      let currentPassword = '';
-
       function customAlert(message) {
-        // Menggunakan alert standar agar user melihat notifikasi di browser
         alert(message); 
-        console.error("Notifikasi Supabase:", message);
-      }
-      
-      function showForm(formId) {
-          if (formId === 'loginForm') {
-              loginContainer.classList.remove('hidden');
-              otpContainer.classList.add('hidden');
-          } else if (formId === 'otpForm') {
-              loginContainer.classList.add('hidden');
-              otpContainer.classList.remove('hidden');
-          }
       }
 
-      // 1. Toggle Password Visibility (Tidak diubah)
+      // 1. Toggle Password Visibility
       togglePassword.addEventListener("click", function () {
         const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordField.setAttribute('type', type);
@@ -172,166 +121,27 @@
       });
 
 
-      // 2. Handle Sign Up/Sign In
-      loginForm.addEventListener("submit", async function (e) {
+      // 2. Handle Login Submission (Simulasi localStorage)
+      loginForm.addEventListener("submit", function (e) {
         e.preventDefault();
 
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
-        
-        currentEmail = email; // Simpan email
-        currentPassword = password; // Simpan password
 
         if (name === "" || email === "" || password === "") {
-          customAlert("Isi Nama, Email, dan Password terlebih dahulu.");
+          customAlert("Isi semua data terlebih dahulu.");
           return;
         }
-
-        // Coba Sign Up (Daftar Akun Baru)
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: email,
-          password: password,
-          options: {
-            data: {
-              name: name 
-            }
-          }
-        });
-
-        if (signUpError) {
-          // Jika user sudah terdaftar, coba Login
-          if (signUpError.message.includes("User already registered") || signUpError.status === 400) {
-            
-            // PENTING: Untuk user yang sudah terdaftar tapi BELUM diverifikasi, Sign In akan gagal.
-            // Kita tetap coba Sign In.
-            customAlert("Email sudah terdaftar. Mencoba Login...");
-            
-            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-              email: email,
-              password: password,
-            });
-
-            if (signInError) {
-              // Jika GAGAL, mungkin user BELUM memverifikasi emailnya
-               if (signInError.message.includes("Email not confirmed")) {
-                   customAlert("Login Gagal: Email Anda belum diverifikasi. Kami akan mengirimkan kode OTP baru.");
-                   // Kirim ulang OTP untuk verifikasi
-                   await supabase.auth.resend({
-                       type: 'signup',
-                       email: email
-                   });
-                   // Pindah ke form OTP
-                   document.getElementById("otpInstruction").textContent = `Masukkan kode 6 digit yang kami kirimkan ke ${email} untuk memverifikasi akun Anda.`;
-                   showForm('otpForm');
-                   return;
-               }
-               
-               customAlert("Login Gagal: " + signInError.message);
-               return;
-            }
-            
-            // Login Berhasil
-            customAlert("Login berhasil! Mengalihkan ke halaman utama.");
-            // Simpan data di localStorage (hanya untuk tampilan Hi, Name di Navbar)
-            localStorage.setItem("isLoggedIn", "true");
-            localStorage.setItem("userName", signInData.user.user_metadata.name || "User");
-            window.location.href = "index.html"; 
-            return;
-
-          } else {
-            customAlert("Gagal Mendaftar: " + signUpError.message);
-            return;
-          }
-        }
-
-        // Jika Sign Up berhasil, tapi Sesi TIDAK dibuat (artinya perlu verifikasi/OTP)
-        if (signUpData.user && !signUpData.session) {
-          customAlert("Pendaftaran berhasil! Silakan cek email Anda untuk Kode OTP verifikasi.");
-          // Pindah ke form OTP
-          document.getElementById("otpInstruction").textContent = `Masukkan kode 6 digit yang kami kirimkan ke ${email} untuk memverifikasi akun Anda.`;
-          showForm('otpForm'); 
-        } 
         
-        // Kasus jarang: Sign Up berhasil & Sesi langsung dibuat (jika konfirmasi email dimatikan di Supabase)
-        else if (signUpData.user && signUpData.session) {
-             customAlert("Sign Up berhasil & Login otomatis! Mengalihkan ke halaman utama.");
-             localStorage.setItem("isLoggedIn", "true");
-             localStorage.setItem("userName", signUpData.user.user_metadata.name || "User");
-             window.location.href = "index.html";
-        }
-      });
-
-
-      // 3. Handle Verifikasi OTP
-      otpForm.addEventListener("submit", async function(e) {
-        e.preventDefault();
+        // Simulasikan login berhasil
+        localStorage.setItem("isLoggedIn", "true"); 
+        localStorage.setItem("userName", name); 
         
-        const token = document.getElementById('otp_code').value.trim();
-
-        if (token.length !== 6 || !currentEmail) {
-            customAlert("Kode OTP tidak valid atau Email tidak ditemukan. Coba kembali.");
-            return;
-        }
-
-        const { error } = await supabase.auth.verifyOtp({
-            email: currentEmail,
-            token: token,
-            type: 'signup',
-        });
-
-        if (error) {
-            customAlert("Verifikasi OTP Gagal: " + error.message);
-            return;
-        }
-
-        // Jika verifikasi berhasil, Supabase TIDAK otomatis membuat sesi. Kita harus sign in secara manual.
-        // Dengan password yang sudah kita simpan (currentPassword)
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email: currentEmail,
-            password: currentPassword,
-        });
+        alert("Login berhasil! (Simulasi LocalStorage). Anda akan dialihkan ke halaman utama.");
         
-        if (signInError) {
-             customAlert("Verifikasi berhasil, tapi Gagal login otomatis: " + signInError.message);
-             return;
-        }
-        
-        customAlert("Verifikasi dan Login berhasil! Mengalihkan ke halaman utama.");
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userName", signInData.user.user_metadata.name || "User");
+        // Alihkan ke halaman utama
         window.location.href = "index.html";
-      });
-
-
-      // 4. Kirim Ulang OTP
-      document.getElementById('resendOtp').addEventListener('click', async function(e) {
-          e.preventDefault();
-          if (!currentEmail) {
-              customAlert("Silakan masukkan email Anda di formulir sebelumnya terlebih dahulu.");
-              return;
-          }
-          
-          const { error } = await supabase.auth.resend({
-             type: 'signup',
-             email: currentEmail
-          });
-
-          if (error) {
-              customAlert("Gagal mengirim ulang OTP: " + error.message);
-          } else {
-              customAlert("Kode OTP baru telah dikirim! Silakan cek email Anda.");
-          }
-      });
-      
-      // 5. Cek status Auth Supabase saat form dimuat
-      supabase.auth.onAuthStateChange((event, session) => {
-        if (session) {
-          // User sudah login, alihkan dari halaman login
-          // window.location.href = 'index.html'; 
-          // Jika Anda ingin mengizinkan user yang sudah login mengakses login.html (misal untuk ganti akun),
-          // baris ini bisa di-comment. Namun, secara umum, lebih baik redirect.
-        }
       });
     });
   </script>
