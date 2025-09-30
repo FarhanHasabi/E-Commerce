@@ -14,12 +14,12 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f7f9fb;
             color: #333;
-            /* **PERBAIKAN FOOTER: Mengatur Body sebagai Flex Container** */
+            /* PERBAIKAN FOOTER: Mengatur Body sebagai Flex Container */
             display: flex;
             flex-direction: column;
         }
         main {
-            /* **PERBAIKAN FOOTER: Konten utama mengambil sisa ruang** */
+            /* PERBAIKAN FOOTER: Konten utama mengambil sisa ruang */
             flex-grow: 1; 
         }
         .font-playfair {
@@ -40,12 +40,11 @@
 </head>
 <body class="min-h-screen">
 
-    <!-- Navbar (Disalin dari index.html agar konsisten) -->
+    <!-- Navbar (Diperbarui dengan logo gambar dan struktur dari acuan) -->
     <header class="bg-white shadow-md sticky top-0 z-10">
         <nav class="container mx-auto p-4 flex justify-between items-center">
-            <!-- Logo -->
-            <a href="index.html" class="text-3xl font-playfair text-pink-600 font-bold tracking-wider">
-                Glamora
+            <a href="index.html" class="flex items-center">
+                <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
             </a>
             <ul class="flex space-x-6 text-sm font-medium">
                 <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
@@ -60,6 +59,7 @@
 
     <!-- Main Content -->
     <main class="container mx-auto p-6 md:p-8">
+        <!-- Ukuran font H1 dipertahankan pada 'text-4xl' sesuai acuan -->
         <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Shopping Cart</h1>
 
         <div class="cart-layout">
@@ -71,6 +71,7 @@
     
                 <!-- Cart Actions -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 mt-6 bg-white rounded-xl shadow-md border border-gray-100">
+                    <!-- Ukuran font dipertahankan pada 'text-pink-600 font-medium' -->
                     <a href="category.html" class="text-pink-600 hover:text-pink-700 font-medium mb-4 sm:mb-0">
                         <span class="text-2xl mr-2">←</span> Lanjut Belanja
                     </a>
@@ -87,17 +88,21 @@
     
             <!-- Ringkasan Pesanan -->
             <aside class="h-fit bg-white p-6 rounded-xl shadow-2xl border-t-4 border-pink-600">
+                <!-- Ukuran font H3 dipertahankan pada 'text-2xl' sesuai acuan -->
                 <h3 class="text-2xl font-playfair font-bold mb-4 text-gray-800">Order Summary</h3>
                 <div class="space-y-3 border-b pb-4 mb-4">
+                    <!-- Ukuran font dipertahankan pada 'text-lg' sesuai acuan -->
                     <div class="flex justify-between text-lg text-gray-600">
                         <span>Subtotal Barang:</span>
                         <strong id="subtotalDisplay" class="text-gray-800">Rp0</strong>
                     </div>
+                    <!-- Ukuran font dipertahankan pada 'text-lg' sesuai acuan -->
                     <div class="flex justify-between text-lg text-gray-600">
                         <span>Pengiriman:</span>
                         <strong class="text-gray-800">Rp20.000</strong>
                     </div>
                 </div>
+                <!-- Ukuran font dipertahankan pada 'text-xl' sesuai acuan -->
                 <div class="flex justify-between text-xl font-bold text-gray-900">
                     <span>Total Keseluruhan:</span>
                     <strong id="totalGrandDisplay" class="text-pink-600">Rp20.000</strong>
@@ -166,7 +171,7 @@
                     <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-md flex-shrink-0" onerror="this.onerror=null;this.src='https://placehold.co/80x80/f0abfc/701a75?text=Img';" />
                     <div class="flex-grow">
                         <h4 class="text-lg font-semibold text-gray-800">${item.name}</h4>
-                        <p class="text-sm text-gray-500">Ukuran: ${item.size}</p>
+                        
                         <p class="text-sm text-gray-500">Harga Satuan: Rp${item.price.toLocaleString("id-ID")}</p>
                     </div>
                     <div class="text-right flex-shrink-0">
@@ -195,4 +200,3 @@
     </script>
 </body>
 </html>
-  

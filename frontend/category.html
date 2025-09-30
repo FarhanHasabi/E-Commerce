@@ -1,100 +1,572 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kategori - Glamora</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategori - Glamora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Menggunakan Poppins sebagai default, Playfair untuk judul */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fb; 
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Memperbaiki agar footer di bawah */
+        }
+        main {
+            flex-grow: 1; 
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        .category-layout {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr; 
+        }
+        @media (min-width: 1024px) {
+            .category-layout {
+                grid-template-columns: 250px 1fr; 
+            }
+        }
+        /* Penyesuaian agar input search di tengah */
+        .filter-bar-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Memusatkan item secara horizontal */
+        }
+        /* Agar dropdown sort tetap di kanan (kecil) atau mengikuti flow (besar) */
+        .sort-container {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        @media (min-width: 1024px) {
+            .sort-container {
+                width: auto;
+                margin-top: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <header>
-    <nav class="navbar">
-      <a href="index.html" class="logo">
-        <img src="assets/img/logo.png" alt="Glamora Logo" />
-      </a>
-      <ul class="nav-links">
-        <li><a href="index.html" class="nav-btn">Home</a></li>
-        <li><a href="category.html" class="nav-btn">Category</a></li>
-        <li><a href="cart.html" class="nav-btn">Shopping Cart</a></li>
-        <li><a href="checkout.html" class="nav-btn">Checkout</a></li>
-        <li><a href="contact.html" class="nav-btn">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <input type="text" placeholder="Search Products" class="search-input">
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
+            </a>
+            <ul class="flex space-x-6 text-sm font-medium">
+                <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
+                <li><a href="category.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600">Category</a></li>
+                <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
+                <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
+                <li><a href="contact.html" class="text-gray-700 hover:text-pink-600 transition">Contact</a></li>
+                <li><a href="login.html" class="bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition shadow-lg" id="loginBtn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <select class="filter-dropdown">
-      <option>All Price</option>
-      <option>Rp150.000 - Rp250.000</option>
-      <option>Rp300.000 - Rp450.000</option>
-      <option>Rp500.000+</option>
-    </select>
+    <div class="bg-white shadow-sm p-4 sticky top-16 z-10 border-b border-gray-100">
+        <div class="container mx-auto filter-bar-content">
+            
+            <div class="relative w-full max-w-lg mb-4 lg:mb-0">
+                <input type="text" placeholder="Search Products..." 
+                       class="search-input w-full p-3 pl-10 border-2 border-pink-300 rounded-full 
+                              focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition shadow-md" 
+                       id="searchInput"
+                       aria-label="Cari Produk">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                </svg>
+            </div>
 
-    <select class="filter-dropdown">
-      <option>Sort By</option>
-      <option>Featured</option>
-      <option>Newest</option>
-      <option>Price: Low to High</option>
-      <option>Price: High to Low</option>
-    </select>
-
-    <select class="filter-dropdown">
-      <option>12 per page</option>
-      <option>24 per page</option>
-      <option>36 per page</option>
-    </select>
-  </div>
-
-  <!-- Main Content -->
-  <main class="category-layout">
-    <!-- Sidebar Kategori -->
-    <aside class="sidebar">
-      <h3>Kategori Produk</h3>
-      <ul class="category-list">
-        <li><button class="btn-pink">Semua</button></li>
-        <li><button class="btn-pink">Pakaian Pria</button></li>
-        <li><button class="btn-pink">Pakaian Wanita</button></li>
-        <li><button class="btn-pink">Pakaian Anak</button></li>
-      </ul>
-    </aside>
-
-    <!-- Produk -->
-    <section class="product-section">
-      <h2>Rekomendasi Glamora</h2>
-      <div class="product-grid">
-        <div class="product-card">
-          <a href="product.html?id=baju-elegan">
-            <img src="assets/img/baju1.jpg" alt="Baju Elegan">
-            <h4>Baju Elegan</h4>
-            <p class="product-price">Rp 249.000</p>
-          </a>
-          <a href="product.html?id=baju-elegan" class="btn-accent">View Details</a>
+            <div class="sort-container">
+                <select class="filter-dropdown p-2 border border-gray-300 rounded-lg text-sm bg-white cursor-pointer shadow-sm" id="sortFilter">
+                    <option value="name.asc">Sort By Name (A-Z)</option>
+                    <option value="name.desc">Sort By Name (Z-Z)</option>
+                    <option value="price.asc">Price: Low to High</option>
+                    <option value="price.desc">Price: High to Low</option>
+                </select>
+            </div>
         </div>
+    </div>
 
-        <div class="product-card">
-          <a href="product.html?id=baju-kasual">
-            <img src="assets/img/baju2.jpg" alt="Baju Kasual">
-            <h4>Baju Kasual</h4>
-            <p class="product-price">Rp 189.000</p>
-          </a>
-          <a href="product.html?id=baju-kasual" class="btn-accent">View Details</a>
-        </div>
+    <main class="container mx-auto p-6 md:p-8">
+        <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Product Category</h1>
 
-        <div class="product-card">
-          <a href="product.html?id=baju-formal">
-            <img src="assets/img/baju3.jpg" alt="Baju Formal">
-            <h4>Baju Formal</h4>
-            <p class="product-price">Rp 299.000</p>
-          </a>
-          <a href="product.html?id=baju-formal" class="btn-accent">View Details</a>
+        <div class="category-layout">
+            <aside class="sidebar p-6 bg-white rounded-xl shadow-lg h-fit">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Kategori Produk</h3>
+                <ul class="category-list space-y-2" id="categoryList">
+                    <li><button class="w-full text-left btn-category bg-pink-600 text-white hover:bg-pink-700 transition px-4 py-2 rounded-lg font-medium shadow" data-table="products">Semua</button></li>
+                    <li><button class="w-full text-left btn-category text-gray-700 hover:bg-pink-100 transition px-4 py-2 rounded-lg" data-table="mens_products">Pakaian Pria</button></li>
+                    <li><button class="w-full text-left btn-category text-gray-700 hover:bg-pink-100 transition px-4 py-2 rounded-lg" data-table="women_products">Pakaian Wanita</button></li>
+                    <li><button class="w-full text-left btn-category text-gray-700 hover:bg-pink-100 transition px-4 py-2 rounded-lg" data-table="kid_products">Pakaian Anak</button></li>
+                </ul>
+            </aside>
+
+            <section class="product-section">
+                <h2 class="text-3xl font-playfair font-semibold text-gray-700 mb-6" id="productSectionTitle">Rekomendasi Glamora</h2>
+                <div class="product-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productGrid">
+                    <div id="loadingIndicator" class="col-span-full text-center p-8 text-gray-500">
+                        Memuat produk...
+                    </div>
+                </div>
+
+                <div id="paginationControls" class="flex justify-between items-center mt-8 pt-4 border-t border-gray-200 hidden">
+                    <button id="prevPageBtn" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        &larr; Previous Page
+                    </button>
+                    <span id="pageInfo" class="text-gray-600 font-medium">Page 1</span>
+                    <button id="nextPageBtn" class="bg-pink-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-pink-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next Page &rarr;
+                    </button>
+                </div>
+            </section>
         </div>
-      </div>
-    </section>
-  </main>
+    </main>
+    
+    <footer class="bg-gray-800 text-white p-6 mt-12">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Glamora. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        // --- Supabase Setup ---
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // PENTING: GANTI DENGAN KREDENSIAL SUPABASE ANDA YANG SEBENARNYA!
+        const PLACEHOLDER_URL = 'https://fkjymlvgbefpsmeqhavs.supabase.co'; // Ganti dengan URL Anda
+        const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZranltbHZnYmVmcHNtZXFoYXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NjA2NzksImV4cCI6MjA3NDAzNjY3OX0.kUO1tjQgMfwIGJAxNT6U94lvqFVsAzPqDbfezXOIkmY'; // Ganti dengan Anon Public Key Anda
+        
+
+        const supabaseUrl = typeof __supabase_url !== 'undefined' ? __supabase_url : PLACEHOLDER_URL;
+        const supabaseKey = typeof __supabase_key !== 'undefined' ? __supabase_key : PLACEHOLDER_KEY;
+        
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        // --- Logika Autentikasi dan Navbar (BARU) ---
+        async function updateAuthStatus() {
+            const loginBtn = document.getElementById("loginBtn");
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user && loginBtn) {
+                const userName = user.user_metadata.name || user.email.split('@')[0];
+                loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
+                loginBtn.href = "#"; 
+                loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
+                loginBtn.onclick = handleLogout; 
+            } else if (loginBtn) {
+                loginBtn.textContent = `Login`; 
+                loginBtn.href = "login.html";
+                loginBtn.classList.add('bg-pink-500', 'hover:bg-pink-600');
+                loginBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                loginBtn.onclick = null;
+            }
+        }
+        
+        async function handleLogout(e) {
+            e.preventDefault();
+            const { error } = await supabase.auth.signOut();
+            
+            if (!error) {
+                alert("Anda berhasil logout.");
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("userName");
+                window.location.reload(); 
+            }
+        }
+        // --- Akhir Logika Autentikasi dan Navbar ---
+
+
+        // --- DOM Elements & State ---
+        const productGrid = document.getElementById('productGrid');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const productSectionTitle = document.getElementById('productSectionTitle'); 
+        const searchInput = document.getElementById('searchInput'); 
+        const sortFilter = document.getElementById('sortFilter');
+
+        // Elemen dan State Paginasi
+        const paginationControls = document.getElementById('paginationControls');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const pageInfo = document.getElementById('pageInfo');
+        const PRODUCTS_PER_PAGE = 16; 
+        
+        let currentPage = 0; 
+        let hasNextPage = false; 
+        
+        let currentTable = 'products'; 
+        let currentSort = 'name.asc';
+        let allProducts = []; 
+
+        // Data placeholder statis
+        const placeholderProducts = [
+            { id: 1, name: "Gaun Pesta Mewah (Demo)", price: 750000, brand: "Elegance Co", sku: "GP001", image: "https://placehold.co/600x400/fbcfe8/be185d?text=Gaun+Pesta" },
+            { id: 2, name: "Kemeja Lengan Panjang (Demo)", price: 320000, brand: "Urban Man", sku: "KM002", image: "https://placehold.co/600x400/bfdbfe/1d4ed8?text=Kemeja+Pria" },
+            { id: 3, name: "Rok Mini Anak (Demo)", price: 150000, brand: "Kiddo Style", sku: "RK003", image: "https://placehold.co/600x400/99f6e4/0d9488?text=Rok+Anak" },
+            { id: 4, name: "Sweater Musim Dingin (Demo)", price: 450000, brand: "Cozy Knit", sku: "SW004", image: "https://placehold.co/600x400/fee2e2/991b1b?text=Sweater" },
+            { id: 5, name: "Jeans Wanita Gaya (Demo)", price: 550000, brand: "Denim Lux", sku: "JN005", image: "https://placehold.co/600x400/fecaca/dc2626?text=Jeans+Wanita" },
+            { id: 6, name: "Sepatu Olahraga Pria (Demo)", price: 600000, brand: "Runner Pro", sku: "SP006", image: "https://placehold.co/600x400/d8b4fe/7c3aed?text=Sepatu+Pria" },
+            { id: 7, name: "Dress Kasual Anak (Demo)", price: 210000, brand: "Happy Kids", sku: "DR007", image: "https://placehold.co/600x400/bae6fd/0369a1?text=Dress+Anak" },
+            { id: 8, name: "Tas Selempang Kulit (Demo)", price: 890000, brand: "Leather Craft", sku: "TS008", image: "https://placehold.co/600x400/c7d2fe/4f46e5?text=Tas+Kulit" }
+        ];
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
+        // --- FUNGSI KERANJANG BARU ---
+        
+/**
+         * Mendapatkan data produk minimum dari objek produk Supabase/placeholder
+         * untuk ditambahkan ke keranjang.
+         */
+        function getCartItemData(product) {
+            // Pastikan priceValue adalah Number, bahkan jika Supabase mengembalikannya sebagai string
+            const priceValue = Number(product.price) || 0; 
+            const imageUrl = product.image && product.image.startsWith('http') 
+                ? product.image 
+                : `https://placehold.co/80x80/f0abfc/701a75?text=Img`; // Placeholder kecil untuk keranjang
+            
+            return {
+                id: product.id || product.sku || Date.now(),
+                name: product.name || 'Produk Tanpa Nama',
+                price: priceValue, // Sekarang dijamin Number
+                image: imageUrl,
+                quantity: 1,
+                size: 'M' // Default size
+            };
+        }
+
+        /**
+         * Menambahkan produk ke keranjang belanja (localStorage)
+         */
+        function addToCart(product) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const newItem = getCartItemData(product);
+
+            // Cek apakah item sudah ada di keranjang (berdasarkan ID/SKU dan Size)
+            const existingItemIndex = cart.findIndex(item => item.id === newItem.id && item.size === newItem.size);
+
+            if (existingItemIndex > -1) {
+                // Jika sudah ada, tambahkan kuantitasnya
+                cart[existingItemIndex].quantity += 1;
+                console.log(`Kuantitas produk "${newItem.name}" diperbarui di keranjang.`);
+            } else {
+                // Jika belum ada, tambahkan item baru
+                cart.push(newItem);
+                console.log(`Produk "${newItem.name}" ditambahkan ke keranjang.`);
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert(`"${newItem.name}" telah ditambahkan ke keranjang!`);
+        }
+
+        /**
+         * Mengarahkan produk langsung ke checkout (menimpa sessionStorage untuk checkout)
+         */
+        function checkoutNow(product) {
+            // Membuat keranjang sementara hanya berisi produk ini
+            const checkoutCart = [getCartItemData(product)];
+            
+            // Simpan ke sessionStorage (sesuai logika checkout.html dan cart.html)
+            sessionStorage.setItem("cartItems", JSON.stringify(checkoutCart));
+
+            // Mengarahkan ke halaman checkout
+            window.location.href = "checkout.html";
+        }
+
+
+        // --- FUNGSI UTAMA FETCH & RENDER (MODIFIKASI RANGE) ---
+
+        async function fetchProducts(tableName, sortBy, page, searchTerm = '', maxRetries = 3) {
+            
+            if (supabaseKey === 'YOUR_ANON_PUBLIC_KEY') {
+                productGrid.innerHTML = `<p class="col-span-full text-red-500 text-center p-8 font-semibold">ERROR: Harap ganti **YOUR_ANON_PUBLIC_KEY** di skrip dengan Anon Public Key Supabase Anda yang valid.</p>`;
+                loadingIndicator.classList.add('hidden');
+                paginationControls.classList.add('hidden');
+                return;
+            }
+
+            const titleMap = {
+                'products': 'Semua Rekomendasi Glamora',
+                'mens_products': 'Pilihan Pakaian Pria',
+                'women_products': 'Koleksi Pakaian Wanita',
+                'kid_products': 'Pakaian Anak Terbaik'
+            };
+            productSectionTitle.textContent = titleMap[tableName] || 'Rekomendasi Glamora';
+
+            productGrid.innerHTML = '';
+            loadingIndicator.classList.remove('hidden');
+            productGrid.appendChild(loadingIndicator);
+            paginationControls.classList.add('hidden'); 
+            
+            const [column, direction] = sortBy.split('.'); 
+            const ascending = direction === 'asc';
+            
+            const startRange = page * PRODUCTS_PER_PAGE;
+            // Ambil satu item ekstra untuk cek halaman berikutnya
+            const endRange = startRange + PRODUCTS_PER_PAGE; 
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    console.log(`Mencoba memuat data dari tabel: ${tableName}. Percobaan ke: ${i + 1}. Halaman: ${page+1}`);
+
+                    let query = supabase
+                        .from(tableName) 
+                        .select('*') 
+                        .order(column, { ascending: ascending })
+                        .range(startRange, endRange); 
+                        
+                    if (searchTerm) {
+                        const searchPattern = `%${searchTerm}%`;
+                        query = query.or(`name.ilike.${searchPattern},brand.ilike.${searchPattern}`);
+                    }
+
+                    const { data, error } = await query;
+
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+                    
+                    hasNextPage = data.length > PRODUCTS_PER_PAGE;
+                    allProducts = data.slice(0, PRODUCTS_PER_PAGE) || []; 
+                    
+                    renderProducts(allProducts);
+                    updatePaginationControls(); 
+                    loadingIndicator.classList.add('hidden');
+                    paginationControls.classList.remove('hidden'); 
+                    return;
+
+                } catch (err) {
+                    console.error(`Percobaan ${i + 1} Gagal memuat produk dari ${tableName}. Error:`, err);
+                    if (i < maxRetries - 1) {
+                        const waitTime = Math.pow(2, i) * 100;
+                        await delay(waitTime); 
+                    } else {
+                        console.error('Semua percobaan pengambilan data Supabase gagal. Menampilkan data fallback.');
+                        
+                        productGrid.innerHTML = `<p class="col-span-full text-red-500 text-center p-8">Gagal terhubung atau tabel **${tableName}** tidak dapat diakses. Pastikan RLS diatur atau dinonaktifkan. Menggunakan data demo.</p>`;
+                        
+                        allProducts = placeholderProducts; 
+                        renderProducts(allProducts, true); 
+                        
+                        updatePaginationControls(true); 
+                        
+                        loadingIndicator.classList.add('hidden');
+                        paginationControls.classList.remove('hidden');
+                    }
+                }
+            }
+        }
+
+        /**
+         * Merender array produk ke dalam grid HTML (MODIFIKASI: TOMBOL)
+         */
+        function renderProducts(products, isPlaceholder = false) {
+            productGrid.innerHTML = ''; 
+
+            if (isPlaceholder && products.length > 0) {
+                 const warning = document.createElement('div');
+                 warning.className = 'col-span-full bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-lg shadow-md';
+                 warning.innerHTML = `<p class="font-bold">Mode Demo Aktif</p><p class="text-sm">Gagal terhubung ke Supabase. Periksa Kunci API & RLS. Data yang ditampilkan adalah contoh statis.</p>`;
+                 productGrid.appendChild(warning);
+            }
+
+            if (products.length === 0) {
+                 productGrid.innerHTML += `<p class="col-span-full text-gray-500 text-center p-8">Tidak ada produk yang cocok dengan kata kunci Anda atau produk di kategori ini kosong.</p>`;
+                 return;
+            }
+
+
+            products.forEach(product => {
+                const priceValue = product.price || 0;
+                const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(priceValue);
+                const placeholderText = product.name || (product.id ? `Produk ID ${product.id}` : 'Produk');
+                const imageUrl = product.image && product.image.startsWith('http') 
+                    ? product.image 
+                    : `https://placehold.co/600x400/fbcfe8/be185d?text=${encodeURIComponent(placeholderText)}`;
+                const sku = product.sku || product.id || 'default';
+
+                // Simpan data produk yang diperlukan ke dalam atribut data-product untuk event listener
+                const productDataAttr = `data-product='${JSON.stringify({ 
+                    id: product.id || product.sku, 
+                    name: product.name, 
+                    price: product.price, 
+                    image: product.image 
+                }).replace(/'/g, "&apos;")}'`;
+
+
+                const productCard = `
+                    <div class="product-card bg-white rounded-xl shadow-xl hover:shadow-2xl transition duration-300 overflow-hidden group">
+                        <div>
+                            <img src="${imageUrl}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/fbcfe8/be185d?text=Image+Not+Found';" alt="${product.name}" class="w-full h-48 object-cover object-center border-b border-gray-100 transform group-hover:scale-[1.05] transition duration-500">
+                            <div class="p-4 text-center">
+                                <a href="product.html?sku=${sku}" class="block">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-1 truncate hover:text-pink-600 transition">${product.name || 'Nama Produk'}</h4>
+                                </a>
+                                <p class="text-sm text-gray-500 mb-3 truncate">${product.brand || 'No Brand'}</p>
+                                <p class="text-xl font-bold text-pink-600">${priceFormatted}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex">
+                            <button class="add-to-cart-btn block w-1/2 text-center bg-pink-100 text-pink-600 py-3 text-sm font-medium hover:bg-pink-200 transition" ${productDataAttr}>
+                                + Keranjang
+                            </button>
+                            <button class="checkout-now-btn block w-1/2 text-center bg-pink-600 text-white py-3 text-sm font-medium hover:bg-pink-700 transition" ${productDataAttr}>
+                                Checkout
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productGrid.innerHTML += productCard;
+            });
+
+            // Tambahkan event listener untuk tombol baru SETELAH DOM diperbarui
+            attachProductButtonListeners(products);
+
+            productSectionTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+
+        /**
+         * Melampirkan event listeners ke tombol "Masukkan Keranjang" dan "Checkout"
+         */
+        function attachProductButtonListeners(products) {
+            // Mapping ID produk ke objek produk yang lengkap untuk akses mudah
+            const productMap = {};
+            products.forEach(p => productMap[p.id || p.sku] = p);
+            
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const dataAttr = e.currentTarget.getAttribute('data-product');
+                    // Menggunakan ID/SKU dari data-product untuk mengambil data lengkap dari productMap
+                    const simpleProduct = JSON.parse(dataAttr.replace(/&apos;/g, "'"));
+                    const fullProduct = productMap[simpleProduct.id || simpleProduct.sku];
+                    if (fullProduct) {
+                         addToCart(fullProduct);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.checkout-now-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const dataAttr = e.currentTarget.getAttribute('data-product');
+                    const simpleProduct = JSON.parse(dataAttr.replace(/&apos;/g, "'"));
+                    const fullProduct = productMap[simpleProduct.id || simpleProduct.sku];
+                    if (fullProduct) {
+                         checkoutNow(fullProduct);
+                    }
+                });
+            });
+        }
+
+
+        // --- Event Handlers & Paginasi ---
+        
+        function updatePaginationControls(isDemoMode = false) {
+            if (isDemoMode) {
+                prevPageBtn.disabled = true;
+                nextPageBtn.disabled = true;
+                pageInfo.textContent = 'Demo Mode (Paginasi Nonaktif)';
+                return;
+            }
+            
+            prevPageBtn.disabled = currentPage === 0;
+            nextPageBtn.disabled = !hasNextPage;
+            pageInfo.textContent = `Page ${currentPage + 1}`;
+        }
+        
+        function loadCurrentProducts() {
+            const searchTerm = searchInput.value.toLowerCase();
+            fetchProducts(currentTable, currentSort, currentPage, searchTerm);
+        }
+
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                loadCurrentProducts();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            if (hasNextPage) {
+                currentPage++;
+                loadCurrentProducts();
+            }
+        });
+
+        function handleSearchFilter() {
+            currentPage = 0; 
+            loadCurrentProducts(); 
+        }
+
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key !== 'Enter') {
+                handleSearchFilter();
+            }
+        });
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                handleSearchFilter(); 
+                searchInput.blur(); 
+            }
+        });
+
+        // Event Listener untuk Sidebar Kategori
+        document.getElementById('categoryList').addEventListener('click', (e) => {
+            const targetButton = e.target.closest('.btn-category');
+            if (targetButton) {
+                const newTable = targetButton.getAttribute('data-table');
+                
+                if (newTable === currentTable) return;
+
+                currentTable = newTable;
+                
+                // 1. Reset Input Pencarian, Sort, dan Halaman
+                searchInput.value = "";
+                sortFilter.value = 'name.asc';
+                currentSort = 'name.asc';
+                currentPage = 0; 
+                
+                // 2. Logika menyorot tombol yang dipilih
+                document.querySelectorAll('.btn-category').forEach(btn => {
+                    btn.classList.remove('bg-pink-600', 'text-white', 'shadow');
+                    btn.classList.add('text-gray-700', 'hover:bg-pink-100');
+                });
+                targetButton.classList.add('bg-pink-600', 'text-white', 'shadow');
+                targetButton.classList.remove('text-gray-700', 'hover:bg-pink-100');
+                
+                // 3. Muat produk dari tabel Supabase yang baru
+                loadCurrentProducts();
+            }
+        });
+
+        // Event Listener untuk Sort Filter
+        sortFilter.addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            currentPage = 0; 
+            loadCurrentProducts();
+        });
+        
+        // --- On Load Setup ---
+        
+        // 1. Inisialisasi status login (BARU: Menggunakan Supabase)
+        updateAuthStatus(); 
+
+        // 2. Muat produk default ('products') saat halaman dimuat
+        loadCurrentProducts(); 
+    </script>
 </body>
 </html>

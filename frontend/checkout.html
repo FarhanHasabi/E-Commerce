@@ -1,109 +1,297 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout - Glamora</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Glamora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Menggunakan Poppins sebagai default, Playfair untuk judul (Consistent with cart.html) */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fb; /* Warna latar belakang dari cart.html */
+            color: #333;
+            /* Mengatur Body sebagai Flex Container agar footer di bawah */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            /* Konten utama mengambil sisa ruang */
+            flex-grow: 1; 
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom style untuk layout grid checkout (Menyesuaikan dengan Cart Layout) */
+        .checkout-layout {
+            display: grid;
+            gap: 2rem;
+            padding: 2rem 1rem;
+        }
+        @media (min-width: 1024px) {
+            /* Desktop: Form (3fr) dan Summary (2fr) - Memberi ruang lebih untuk form */
+            .checkout-layout {
+                grid-template-columns: 3fr 2fr; 
+                padding: 2rem;
+            }
+        }
+        /* Navbar Styling (Consistent with all pages, using standard class names) */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .nav-btn {
+            color: #4b5563; /* gray-700 */
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            transition: color 0.3s;
+        }
+        .nav-btn:hover {
+            color: #ec4899; /* pink-600 */
+        }
+        .nav-btn.active {
+            color: #ec4899; /* pink-600 */
+            font-weight: 600;
+            border-bottom: 2px solid #ec4899;
+        }
+    </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <header>
-    <nav class="navbar">
-      <a href="index.html" class="logo">
-        <img src="assets/img/logo.png" alt="Glamora Logo" />
-      </a>
-      <ul class="nav-links">
-        <li><a href="index.html" class="nav-btn">Home</a></li>
-        <li><a href="category.html" class="nav-btn">Category</a></li>
-        <li><a href="cart.html" class="nav-btn">Shopping Cart</a></li>
-        <li><a href="checkout.html" class="nav-btn">Checkout</a></li>
-        <li><a href="contact.html" class="nav-btn">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
+            </a>
+            <ul class="flex space-x-6 text-sm font-medium">
+                <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
+                <li><a href="category.html" class="text-gray-700 hover:text-pink-600 transition">Category</a></li>
+                <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
+                <li><a href="checkout.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600">Checkout</a></li>
+                <li><a href="contact.html" class="text-gray-700 hover:text-pink-600 transition">Contact</a></li>
+                <li><a href="login.html" class="bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition shadow-lg" id="loginBtn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <!-- Checkout Layout -->
-  <main class="checkout-layout">
-    <!-- Checkout Form -->
-    <section class="checkout-form">
-      <h2>Checkout</h2>
+    <main class="container mx-auto max-w-7xl checkout-layout">
+        
+        <section class="checkout-form bg-white p-6 md:p-8 rounded-xl shadow-xl h-fit border border-gray-100">
+            <h1 class="text-3xl font-playfair font-bold text-pink-600 mb-8 border-b pb-4">Shipping and Payment</h1>
 
-      <h3>1. Customer Information</h3>
-      <input type="text" placeholder="First Name" required>
-      <input type="text" placeholder="Last Name" required>
-      <input type="email" placeholder="Email Address" required>
-      <input type="tel" placeholder="Phone Number" required>
+            <form class="space-y-6" id="checkoutForm">
+                
+                <div class="space-y-4">
+                    <h3 class="text-xl font-semibold text-gray-800 border-l-4 border-pink-500 pl-3">1. Contact Details</h3>
+                    <input type="email" placeholder="Email Address" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" placeholder="First Name" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                        <input type="text" placeholder="Last Name" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                    </div>
+                    <input type="text" placeholder="Phone Number" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                    <label class="flex items-center space-x-2 text-sm text-gray-600">
+                        <input type="checkbox" class="rounded text-pink-500 focus:ring-pink-500 border-gray-300">
+                        <span>Save this information for next time</span>
+                    </label>
+                </div>
 
-      <h3>2. Shipping Address</h3>
-      <input type="text" placeholder="Street Address" required>
-      <input type="text" placeholder="Apartment/Suite (Optional)">
-      <input type="text" placeholder="City" required>
-      <input type="text" placeholder="State/Province" required>
-      <input type="text" placeholder="Postal Code" required>
+                <div class="space-y-4 pt-6 border-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 border-l-4 border-pink-500 pl-3">2. Shipping Address</h3>
+                    <input type="text" placeholder="Address (Street, House Number)" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" placeholder="City" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                        <input type="text" placeholder="Province" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                        <input type="text" placeholder="Postal Code" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-pink-500 focus:border-pink-500 transition duration-150" required>
+                    </div>
+                </div>
 
-      <h3>3. Payment Method</h3>
-      <select required>
-        <option value="">Select Payment Method</option>
-        <option value="card">Credit/Debit Card</option>
-        <option value="cod">Cash on Delivery</option>
-        <option value="transfer">Bank Transfer</option>
-      </select>
+                <div class="space-y-4 pt-6 border-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 border-l-4 border-pink-500 pl-3">3. Payment Method</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 p-4 border border-pink-400 rounded-xl bg-pink-50/70 cursor-pointer transition duration-150 shadow-md">
+                            <input type="radio" name="payment" value="cod" checked class="text-pink-500 w-5 h-5 focus:ring-pink-500 border-pink-400">
+                            <span class="font-medium text-gray-800">Cash On Delivery (COD)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-xl bg-white cursor-pointer hover:bg-gray-50 transition duration-150 shadow-sm">
+                            <input type="radio" name="payment" value="transfer" class="text-pink-500 w-5 h-5 focus:ring-pink-500 border-gray-300">
+                            <span class="font-medium text-gray-800">Bank Transfer / E-Wallet</span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </section>
 
-      <div class="card-details">
-        <input type="text" placeholder="Card Number (e.g. 1234 5678 9012 3456)">
-        <input type="text" placeholder="Expiration Date (MM/YY)">
-        <input type="text" placeholder="CVV Code (e.g. 123)">
-        <input type="text" placeholder="Name on Card">
-      </div>
+        <aside class="order-summary bg-white p-6 md:p-8 rounded-xl shadow-xl h-fit border border-pink-100">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-3">Order Summary</h2>
 
-      <h3>4. Review & Place Order</h3>
-      <label><input type="checkbox" required> I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></label>
-      <button type="button" class="btn-dark" id="placeOrderBtn">Place Order – Rp0</button>
-    </section>
+            <div id="cartItemsList" class="border-b border-gray-200 pb-4 space-y-3 text-sm">
+                <p class="text-gray-500 italic">No items found. Please go back to the cart.</p>
+            </div>
 
-    <!-- Order Summary -->
-    <aside class="order-summary">
-      <h3>Order Summary</h3>
-      <p>Subtotal: <strong id="subtotal">Rp0</strong></p>
-      <p>Shipping Fee: <strong id="shipping">Rp0</strong></p>
-      <p>Tax: <strong id="tax">Rp0</strong></p>
-      <hr>
-      <p>Total: <strong id="total">Rp0</strong></p>
-    </aside>
-  </main>
+            <div class="space-y-3 text-gray-600 mt-4">
+                <div class="flex justify-between">
+                    <span>Subtotal</span>
+                    <span id="subtotal" class="font-medium text-gray-800">Rp0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Shipping Cost</span>
+                    <span id="shipping" class="font-medium text-gray-800">Rp0</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-200 pb-3">
+                    <span>Tax (10%)</span>
+                    <span id="tax" class="font-medium text-gray-800">Rp0</span>
+                </div>
+                <div class="flex justify-between text-xl font-bold pt-4 text-gray-800">
+                    <span>Grand Total</span>
+                    <strong id="total" class="text-pink-600">Rp0</strong>
+                </div>
+            </div>
+            
+            <button id="placeOrderBtn" class="w-full mt-8 py-4 bg-pink-600 text-white text-lg font-bold rounded-full hover:bg-pink-700 transition duration-200 shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-pink-300 transform hover:scale-[1.01]">
+                Place Order – Rp0
+            </button>
 
-  <!-- Script: Ambil Data Cart dan Hitung Total -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+            <p class="text-xs text-center text-gray-400 mt-4">By placing your order, you agree to our Terms & Conditions.</p>
+        </aside>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-4 mt-10">
+        <div class="container mx-auto text-center text-sm max-w-7xl">
+            <p>© 2024 Glamora. All Rights Reserved.</p>
+        </div>
+    </footer>
 
-      let subtotal = 0;
-      cartItems.forEach(item => {
-        subtotal += item.price * item.quantity;
-      });
+    <script>
+        // Utility function for Rupiah currency formatting
+        function formatRupiah(number) {
+            // Ensure the number is a safe integer before formatting
+            if (typeof number !== 'number' || isNaN(number) || !isFinite(number)) return 'Rp0';
+            return `Rp${Math.round(number).toLocaleString("id-ID")}`;
+        }
 
-      const shipping = 30000;
-      const tax = Math.round(subtotal * 0.1); // contoh: 10% pajak
-      const total = subtotal + shipping + tax;
+        // Function to show a custom message (replaces alert/confirm)
+        function showCustomMessage(message, type = 'info') {
+            // In a real app, this would show a custom modal or toast notification on the UI
+            console.log(`[Custom Message - ${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Function to render the item list in the summary box
+        function renderCartItems(items) {
+            const listContainer = document.getElementById("cartItemsList");
+            listContainer.innerHTML = '';
+            
+            if (items.length === 0) {
+                listContainer.innerHTML = '<p class="text-center text-gray-500 py-4 italic">Your cart is empty. Please return to shopping.</p>';
+                return;
+            }
 
-      // Tampilkan di Order Summary
-      document.getElementById("subtotal").textContent = `Rp${subtotal.toLocaleString("id-ID")}`;
-      document.getElementById("shipping").textContent = `Rp${shipping.toLocaleString("id-ID")}`;
-      document.getElementById("tax").textContent = `Rp${tax.toLocaleString("id-ID")}`;
-      document.getElementById("total").textContent = `Rp${total.toLocaleString("id-ID")}`;
+            items.forEach(item => {
+                const price = Number(item.price) || 0;
+                const quantity = Number(item.quantity) || 0;
+                const subtotalItem = price * quantity;
 
-      // Update tombol Place Order
-      document.getElementById("placeOrderBtn").textContent = `Place Order – Rp${total.toLocaleString("id-ID")}`;
-    });
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex justify-between items-start text-sm';
+                
+                itemElement.innerHTML = `
+                    <div class="text-gray-700 max-w-[70%] leading-tight">
+                        <span class="font-medium">${item.name || 'Unknown Item'}</span> 
+                        <span class="text-xs text-gray-500 block">Qty: ${quantity} x ${formatRupiah(price)}</span>
+                    </div>
+                    <span class="text-gray-800 font-medium">${formatRupiah(subtotalItem)}</span>
+                `;
+                listContainer.appendChild(itemElement);
+            });
+        }
 
-    // Redirect ke halaman konfirmasi
-    document.getElementById("placeOrderBtn").addEventListener("click", function () {
-      sessionStorage.setItem("orderStatus", "Confirmed");
-      sessionStorage.setItem("deliveryEstimate", "3–5 business days");
-      window.location.href = "order-confirmation.html";
-    });
-  </script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // PERBAIKAN: Mengganti localStorage menjadi sessionStorage
+            const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+            const placeOrderBtn = document.getElementById("placeOrderBtn");
+            const checkoutForm = document.getElementById("checkoutForm");
+            
+            // Render the item list in the summary
+            renderCartItems(cartItems);
+
+            // --- Calculation Logic ---
+            let subtotal = 0;
+            cartItems.forEach(item => {
+                // Konversi eksplisit ke Number (sudah benar, tapi penting)
+                const price = Number(item.price) || 0;
+                const quantity = Number(item.quantity) || 0;
+                subtotal += price * quantity;
+            });
+
+            const shipping = 30000; // Fixed shipping cost (e.g., Rp30.000)
+            const taxRate = 0.1;
+            const tax = Math.round(subtotal * taxRate); // 10% tax
+            const total = subtotal + shipping + tax;
+
+            // Display in Order Summary
+            document.getElementById("subtotal").textContent = formatRupiah(subtotal);
+            document.getElementById("shipping").textContent = formatRupiah(shipping);
+            document.getElementById("tax").textContent = formatRupiah(tax);
+            document.getElementById("total").textContent = formatRupiah(total);
+
+            // Update Place Order button text
+            placeOrderBtn.textContent = `Place Order – ${formatRupiah(total)}`;
+            if (cartItems.length === 0) {
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                placeOrderBtn.disabled = false;
+                placeOrderBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            // --- Event Listener ---
+            placeOrderBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                
+                // Form Validation check
+                if (!checkoutForm.checkValidity()) {
+                    showCustomMessage("Please fill out all required fields.", 'error');
+                    checkoutForm.reportValidity(); // Forces the browser to show native validation messages
+                    return;
+                }
+
+                if (cartItems.length === 0) {
+                    showCustomMessage("Your cart is empty. Cannot place an order.", 'warning');
+                    return;
+                }
+                
+                // --- Simulate Order Processing ---
+                
+                // 1. Get form data (simulated)
+                const formData = new FormData(checkoutForm);
+                const orderData = Object.fromEntries(formData.entries());
+                orderData.items = cartItems;
+                orderData.totalAmount = total;
+                
+                // 2. Clear cart and set status
+                // PERBAIKAN: Mengganti localStorage menjadi sessionStorage
+                sessionStorage.removeItem("cartItems"); // Empty the checkout session cart after successful order
+                // Opsional: Hapus keranjang utama di localStorage jika menggunakan tombol checkout di halaman cart.html
+                localStorage.removeItem("cart"); 
+                localStorage.setItem("lastOrderData", JSON.stringify(orderData)); // Store order data
+                
+                // 3. Redirect (simulated confirmation)
+                showCustomMessage("Order placed successfully!", 'success');
+                // Redirect to index.html or a dedicated confirmation page
+                window.location.href = "index.html?order=success";
+            });
+        });
+    </script>
 </body>
 </html>
