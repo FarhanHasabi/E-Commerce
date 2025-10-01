@@ -6,7 +6,6 @@
   <title>Daftar Akun - Glamora</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
     body {
@@ -40,28 +39,12 @@
     }
   </style>
 </head>
-<body class="flex flex-col">
-  <header class="bg-white shadow-md sticky top-0 z-10">
-      <nav class="container mx-auto p-4 flex justify-between items-center">
-          <a href="index.html" class="flex items-center">
-              <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
-          </a>
-          <ul class="flex space-x-6 text-sm font-medium">
-              <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
-              <li><a href="category.html" class="text-gray-700 hover:text-pink-600 transition">Category</a></li>
-              <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
-              <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
-              <li><a href="contact.html" class="text-gray-700 hover:text-pink-600 transition">Contact</a></li>
-              <li><a href="login.html" class="text-gray-700 hover:text-pink-600 transition">Login</a></li>
-          </ul>
-      </nav>
-  </header>
+<body>
 
   <main class="signup-container flex-grow">
     <section class="signup-box w-full max-w-md bg-white p-8 md:p-10 rounded-xl shadow-2xl border-t-4 border-pink-500">
       <h2 class="text-3xl font-playfair font-bold text-gray-800 mb-2 text-center">Create Your Account</h2>
-      <p class="text-center text-gray-500 mb-8">Daftar untuk mulai berbelanja di Glamora.
-</p>
+      <p class="text-center text-gray-500 mb-8">Daftar untuk mulai berbelanja di Glamora.</p>
       
       <form class="space-y-5" id="signupForm">
         
@@ -97,8 +80,11 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const PLACEHOLDER_URL = 'https://fkjymlvgbefpsmeqhavs.supabase.co'; // Ganti dengan URL Anda
-    const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZranltbHZnYmVmcHNtZXFoYXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NjA2NzksImV4cCI6MjA3NDAzNjY3OX0.kUO1tjQgMfwIGJAxNT6U94lvqFVsAzPqDbfezXOIkmY'; // Ganti dengan Anon Public Key Anda
+    // =======================================================
+    // ⚠️ GANTI DENGAN KUNCI SUPABASE ANDA ⚠️
+    // =======================================================
+    const PLACEHOLDER_URL = 'https://pykzuzlcqumlpbxuhvnk.supabase.co'; // Ganti dengan URL Anda
+    const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a3p1emxjcXVtbHBieHVodm5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyNTQ4NjAsImV4cCI6MjA3NDgzMDg2MH0.P8ofbHa0UhBTwCRDdpX8c8-zx8gNwKFpDln0VsPYXTc'; // Ganti dengan Anon Public Key Anda
     
     const supabaseUrl = typeof __supabase_url !== 'undefined' ? __supabase_url : PLACEHOLDER_URL;
     const supabaseKey = typeof __supabase_key !== 'undefined' ? __supabase_key : PLACEHOLDER_KEY;
@@ -134,33 +120,54 @@
         signupButton.disabled = true;
         signupButton.textContent = "Processing...";
 
-        // Panggil fungsi registrasi Supabase (menyimpan ke Auth users)
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: {
-                    full_name: name // Menyimpan nama ke metadata user (opsional)
+        try {
+            // Panggil fungsi registrasi Supabase (menyimpan ke Auth users)
+            // Nama pengguna dikirim melalui 'options.data'
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: name // Data ini akan digunakan oleh Database Trigger
+                    }
                 }
-            }
-        });
-        
-        signupButton.disabled = false;
-        signupButton.textContent = "Daftar Sekarang →";
+            });
+            
+            if (error) {
+                console.error("Sign up error:", error.message);
+                alert(`Pendaftaran gagal: ${error.message}.`);
+                return;
+            } 
+            
+            let user = data.user;
+            
+            // ⭐️ PENTING: Hapus logika client-side untuk INSERT/UPSERT ke profiles
+            // Proses INSERT ke 'profiles' sekarang dijamin oleh Database Trigger (SQL di atas)
 
-        if (error) {
-            console.error("Sign up error:", error.message);
-            alert(`Pendaftaran gagal: ${error.message}. Pastikan email belum terdaftar dan kredensial Supabase benar.`);
-        } else if (data && data.user) {
-             // User langsung login (jika konfirmasi email dimatikan di Supabase)
-             alert("Pendaftaran berhasil dan Anda telah login! Selamat berbelanja.");
-             window.location.href = "index.html";
-        } else if (data && data.session === null) {
-            // Ini terjadi jika Supabase meminta konfirmasi email
-            alert("Pendaftaran berhasil! Silakan cek email Anda untuk tautan verifikasi. Setelah diverifikasi, Anda bisa login.");
-            window.location.href = "login.html"; 
-        } else {
-             alert("Terjadi kesalahan tak terduga saat mendaftar.");
+            // Simpan nama di localStorage jika berhasil (untuk tampilan navbar)
+            localStorage.setItem("userName", name);
+
+            // Tentukan langkah selanjutnya (Redirect)
+            if (user && data.session) {
+                // User langsung login (jika konfirmasi email dimatikan)
+                localStorage.setItem("isLoggedIn", "true");
+                alert("Pendaftaran berhasil dan Anda telah login! Selamat berbelanja.");
+                window.location.href = "index.html";
+            } else if (user && data.session === null) {
+                // Supabase meminta konfirmasi email
+                alert("Pendaftaran berhasil! Silakan cek email Anda untuk tautan verifikasi. Setelah diverifikasi, Anda bisa login.");
+                window.location.href = "login.html"; 
+            } else {
+                alert("Terjadi kesalahan tak terduga saat mendaftar.");
+            }
+        } catch (e) {
+            // Menangkap kesalahan jaringan atau eksekusi yang tak terduga
+            console.error("A critical error occurred:", e.message);
+            alert("Terjadi kesalahan jaringan atau koneksi Supabase. Cek console log.");
+        } finally {
+            // Blok ini memastikan tombol kembali normal
+            signupButton.disabled = false;
+            signupButton.textContent = "Daftar Sekarang →";
         }
       });
     });

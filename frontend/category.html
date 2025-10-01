@@ -140,11 +140,20 @@
 
     <script type="module">
         // --- Supabase Setup ---
+        async function getCurrentUserId() {
+            // Memastikan user sudah login
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                // Ini tidak akan tercapai jika cek login di addToCart sudah benar, tapi ini adalah safety net
+                return null;
+            }
+            return user.id;
+        }
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
         // PENTING: GANTI DENGAN KREDENSIAL SUPABASE ANDA YANG SEBENARNYA!
-        const PLACEHOLDER_URL = 'https://fkjymlvgbefpsmeqhavs.supabase.co'; // Ganti dengan URL Anda
-        const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZranltbHZnYmVmcHNtZXFoYXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NjA2NzksImV4cCI6MjA3NDAzNjY3OX0.kUO1tjQgMfwIGJAxNT6U94lvqFVsAzPqDbfezXOIkmY'; // Ganti dengan Anon Public Key Anda
+        const PLACEHOLDER_URL = 'https://pykzuzlcqumlpbxuhvnk.supabase.co'; // Ganti dengan URL Anda
+        const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a3p1emxjcXVtbHBieHVodm5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyNTQ4NjAsImV4cCI6MjA3NDgzMDg2MH0.P8ofbHa0UhBTwCRDdpX8c8-zx8gNwKFpDln0VsPYXTc'; // Ganti dengan Anon Public Key Anda
         
         const supabaseUrl = typeof __supabase_url !== 'undefined' ? __supabase_url : PLACEHOLDER_URL;
         const supabaseKey = typeof __supabase_key !== 'undefined' ? __supabase_key : PLACEHOLDER_KEY;
@@ -259,10 +268,10 @@
         }
 
         /**
-         * Menambahkan produk ke keranjang belanja (localStorage)
+         * Menambahkan produk ke keranjang belanja (ke Supabase DB)
          * 🚨 DILINDUNGI CEK LOGIN
          */
-        function addToCart(product) {
+        async function addToCart(product) { // Jadikan async
             // Cek status login
             const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
             
@@ -271,25 +280,48 @@
                 window.location.href = "login.html";
                 return;
             }
-            
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            const newItem = getCartItemData(product);
 
-            // Cek apakah item sudah ada di keranjang (berdasarkan ID/SKU dan Size)
-            const existingItemIndex = cart.findIndex(item => item.id === newItem.id && item.size === newItem.size);
-
-            if (existingItemIndex > -1) {
-                // Jika sudah ada, tambahkan kuantitasnya
-                cart[existingItemIndex].quantity += 1;
-                console.log(`Kuantitas produk "${newItem.name}" diperbarui di keranjang.`);
-            } else {
-                // Jika belum ada, tambahkan item baru
-                cart.push(newItem);
-                console.log(`Produk "${newItem.name}" ditambahkan ke keranjang.`);
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                alert("Gagal mendapatkan data user. Silakan login ulang.");
+                window.location.href = "login.html";
+                return;
             }
+            
+            // Siapkan data untuk Stored Procedure/RPC
+            const productSku = product.sku || product.id; // Gunakan SKU sebagai identifier produk
+            const priceValue = Number(product.price) || 0;
+            
+            // Panggil Stored Procedure di Supabase
+            try {
+                const { error } = await supabase.rpc('add_item_to_cart', {
+                    p_user_id: userId,
+                    p_sku: String(productSku), // Pastikan SKU adalah teks
+                    p_price: priceValue,
+                    p_name: product.name,
+                    p_image: product.image,
+                    p_quantity: 1 // Default menambahkan 1 unit
+                });
 
-            localStorage.setItem("cart", JSON.stringify(cart));
-            alert(`"${newItem.name}" telah ditambahkan ke keranjang!`);
+                if (error) {
+                    console.error("Gagal menambahkan ke keranjang via Supabase RPC:", error);
+                    // Error 42501 biasanya RLS.
+                    if (error.code === '42501') {
+                        alert(`Gagal! Izin ditolak. Pastikan RLS di tabel 'carts' sudah benar (INSERT/UPDATE).`);
+                    } else {
+                        alert(`Gagal menambahkan "${product.name}" ke keranjang. Error: ${error.message}`);
+                    }
+                    return;
+                }
+
+                // Berhasil!
+                console.log(`Produk "${product.name}" berhasil ditambahkan/kuantitas diperbarui di Supabase.`);
+                alert(`"${product.name}" telah ditambahkan ke keranjang!`);
+                
+            } catch (e) {
+                console.error("Kesalahan kritis saat pemanggilan RPC:", e);
+                alert("Terjadi kesalahan sistem saat mencoba menambah keranjang.");
+            }
         }
 
         /**
@@ -480,14 +512,14 @@
             products.forEach(p => productMap[p.id || p.sku] = p);
             
             document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
+                button.addEventListener('click', async (e) => { // Tambahkan 'async' di sini
                     const dataAttr = e.currentTarget.getAttribute('data-product');
                     // Menggunakan ID/SKU dari data-product untuk mengambil data lengkap dari productMap
                     const simpleProduct = JSON.parse(dataAttr.replace(/&apos;/g, "'"));
                     const fullProduct = productMap[simpleProduct.id || simpleProduct.sku];
                     if (fullProduct) {
-                         // Panggil fungsi addToCart (dengan cek login di dalamnya)
-                         addToCart(fullProduct);
+                    // Panggil fungsi addToCart
+                        await addToCart(fullProduct); // Tambahkan 'await' di sini
                     }
                 });
             });

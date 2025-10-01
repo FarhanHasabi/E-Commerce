@@ -6,6 +6,7 @@
     <title>Checkout - Glamora</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         /* Menggunakan Poppins sebagai default, Playfair untuk judul (Consistent with cart.html) */
@@ -169,7 +170,17 @@
         </div>
     </footer>
 
-    <script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // =======================================================
+        // ⚠️ GANTI DENGAN KUNCI SUPABASE ANDA ⚠️
+        // =======================================================
+        const SUPABASE_URL = 'https://pykzuzlcqumlpbxuhvnk.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a3p1emxjcXVtbHBieHVodm5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyNTQ4NjAsImV4cCI6MjA3NDgzMDg2MH0.P8ofbHa0UhBTwCRDdpX8c8-zx8gNwKFpDln0VsPYXTc'; 
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         // --- Global Helper Functions ---
         function formatRupiah(number) {
             return new Intl.NumberFormat('id-ID', {
@@ -202,10 +213,12 @@
         }
 
         // --- Logika Autentikasi dan Navbar ---
-        function handleLogout(e) {
+        async function handleLogout(e) {
             e.preventDefault();
             localStorage.removeItem("isLoggedIn");
             localStorage.removeItem("userName");
+            // ⭐️ Logout Supabase
+            await supabase.auth.signOut();
             
             showCustomMessage("Anda berhasil logout.", 'success');
             setTimeout(() => {
@@ -239,44 +252,37 @@
         }
         // --- Akhir Logika Autentikasi dan Navbar ---
 
-        // --- Logika Highlighting Pilihan Pembayaran (PERBAIKAN BARU) ---
+        // --- Logika Highlighting Pilihan Pembayaran ---
         function setupPaymentHighlighting() {
             const paymentContainer = document.getElementById('paymentMethodsContainer');
             if (!paymentContainer) return;
             
-            // Kelas yang digunakan untuk menyorot opsi yang aktif
             const activeClasses = ['border-pink-300', 'bg-pink-50'];
-            const inactiveClasses = ['border-gray-300', 'bg-white']; // Menghilangkan hover:bg-gray-50 dari sini
-
+            
             const labels = paymentContainer.querySelectorAll('.payment-option-label');
 
             labels.forEach(label => {
                 const radio = label.querySelector('input[type="radio"]');
                 
-                // Event listener untuk setiap radio button
                 radio.addEventListener('change', () => {
-                    // 1. Hapus kelas aktif dari semua label, tambahkan kelas non-aktif (default)
                     labels.forEach(l => {
                         l.classList.remove(...activeClasses);
                         l.classList.add('border-gray-300', 'bg-white', 'hover:bg-gray-50');
                         l.classList.remove('hover:bg-pink-100');
                     });
 
-                    // 2. Tambahkan kelas aktif pada label yang saat ini dipilih
                     if (radio.checked) {
                         label.classList.add(...activeClasses);
                         label.classList.remove('border-gray-300', 'bg-white', 'hover:bg-gray-50');
-                        label.classList.add('hover:bg-pink-100'); // Tambahkan hover pink saat aktif
+                        label.classList.add('hover:bg-pink-100'); 
                     }
                 });
 
-                // Inisialisasi: Hapus kelas inaktif default pada label yang awalnya "checked" (seperti Transfer Bank)
                 if (radio.checked) {
                     label.classList.remove('border-gray-300', 'bg-white', 'hover:bg-gray-50');
                     label.classList.add(...activeClasses);
                     label.classList.add('hover:bg-pink-100');
                 } else {
-                    // Pastikan opsi non-aktif memiliki kelas default yang benar
                     label.classList.remove(...activeClasses);
                     label.classList.add('border-gray-300', 'bg-white', 'hover:bg-gray-50');
                     label.classList.remove('hover:bg-pink-100');
@@ -286,12 +292,12 @@
         // --- Akhir Logika Highlighting Pilihan Pembayaran ---
 
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", async function () {
             
             // Panggil fungsi autentikasi
             updateAuthStatus();
             
-            // Panggil fungsi highlighting pembayaran (BARU)
+            // Panggil fungsi highlighting pembayaran
             setupPaymentHighlighting();
 
             const summaryItems = document.getElementById('summaryItems');
@@ -302,22 +308,34 @@
             let total = 0;
             let cartItems = [];
             
-            // Load Cart Items
+            // ⭐️ Cek apakah user sudah login, jika tidak, redirect
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                alert("Anda harus login untuk melanjutkan ke checkout.");
+                window.location.href = "login.html";
+                return;
+            }
+            
+            // Load Cart Items dari Session Storage (telah dimuat dari Supabase saat login)
             function loadCart() {
-                // Menggunakan kunci "cartItems" yang diset oleh cart.html
                 const cartData = sessionStorage.getItem("cartItems"); 
                 cartItems = cartData ? JSON.parse(cartData) : [];
                 
-                // Perhitungan
                 let subtotal = 0;
                 
                 if (cartItems.length === 0) {
-                    summaryItems.innerHTML = '<p class="text-red-500 italic">Keranjang Anda kosong. Mohon tambahkan produk.</p>';
+                    summaryItems.innerHTML = '<p class="text-red-500 italic">Keranjang Anda kosong. Mohon tambahkan produk. Anda akan dialihkan...</p>';
                     total = 0;
+                    // Redirect jika keranjang kosong
+                    setTimeout(() => {
+                        window.location.href = "cart.html";
+                    }, 2000);
                 } else {
                     summaryItems.innerHTML = ''; // Clear loading message
 
                     cartItems.forEach(item => {
+                        // Catatan: Asumsi item memiliki struktur { name, price, quantity } dari Supabase carts
                         const itemTotal = item.price * item.quantity;
                         subtotal += itemTotal;
 
@@ -330,7 +348,6 @@
                         summaryItems.appendChild(itemEl);
                     });
                     
-                    // Total hanya Subtotal (setelah menghapus biaya kirim)
                     total = subtotal; 
                 }
 
@@ -343,10 +360,9 @@
             loadCart();
 
             // Handle Checkout Submission
-            checkoutForm.addEventListener('submit', function(e) {
+            checkoutForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
-                // Validasi sederhana
                 if (!checkoutForm.checkValidity()) {
                     showCustomMessage("Mohon lengkapi semua kolom yang wajib diisi.", 'warning');
                     return;
@@ -357,27 +373,38 @@
                     return;
                 }
                 
-                // --- Simulate Order Processing ---
-                
-                // 1. Get form data (simulated)
-                const formData = new FormData(checkoutForm);
-                const orderData = Object.fromEntries(formData.entries());
-                orderData.items = cartItems;
-                orderData.totalAmount = total;
-                
-                // 2. Clear cart and set status
-                // Hapus keranjang di sessionStorage setelah pesanan berhasil
-                sessionStorage.removeItem("cartItems"); 
-                // Hapus keranjang utama di localStorage
-                localStorage.removeItem("cart"); 
-                localStorage.setItem("lastOrderData", JSON.stringify(orderData)); // Simpan data pesanan
-                
-                // 3. Redirect (simulated confirmation)
-                showCustomMessage("Pesanan berhasil ditempatkan! Anda akan dialihkan ke halaman utama.", 'success');
-                // Redirect to index.html or a dedicated confirmation page
-                setTimeout(() => {
-                    window.location.href = "index.html?order=success";
-                }, 1500);
+                // ⭐️ LOGIKA KRITIS: Hapus keranjang dari Supabase
+                try {
+                    // Ini mengosongkan keranjang di database, sehingga persisten.
+                    const { error } = await supabase
+                        .from('carts')
+                        .delete()
+                        .eq('user_id', user.id); // Hapus semua item keranjang user ini
+                    
+                    if (error) throw error;
+
+                    // 1. Get form data (simulated)
+                    const formData = new FormData(checkoutForm);
+                    const orderData = Object.fromEntries(formData.entries());
+                    orderData.items = cartItems;
+                    orderData.totalAmount = total;
+                    orderData.userId = user.id; // Tambahkan ID user
+
+                    // 2. Clear cart status dan simpan data pesanan
+                    sessionStorage.removeItem("cartItems"); 
+                    localStorage.removeItem("cart"); // Hapus keranjang utama di localStorage (jika masih ada)
+                    localStorage.setItem("lastOrderData", JSON.stringify(orderData)); // Simpan data pesanan (simulasi)
+
+                    // 3. Redirect (simulated confirmation)
+                    showCustomMessage("Pesanan berhasil ditempatkan! Keranjang telah dikosongkan.", 'success');
+                    setTimeout(() => {
+                        window.location.href = "index.html?order=success";
+                    }, 1500);
+
+                } catch (error) {
+                    console.error("Gagal saat Checkout atau menghapus keranjang Supabase:", error);
+                    showCustomMessage(`Checkout gagal: ${error.message}. Keranjang mungkin belum terhapus.`, 'warning');
+                }
             });
         });
     </script>

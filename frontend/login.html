@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Glamora</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght+700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   
   <style>
     body {
@@ -13,11 +13,12 @@
         background-color: #f7f9fb;
         color: #333;
         min-height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
     .font-playfair {
         font-family: 'Playfair Display', serif;
     }
-    /* Menjadikan konten login di tengah layar */
     .login-container {
         display: flex;
         justify-content: center;
@@ -25,7 +26,6 @@
         padding: 2rem;
         flex-grow: 1;
     }
-    /* Style untuk toggle password */
     .password-field {
       position: relative;
     }
@@ -35,115 +35,180 @@
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: #9ca3af; /* gray-400 */
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #701a75;
       user-select: none;
-      font-size: 0.875rem; /* text-sm */
     }
   </style>
 </head>
-<body class="flex flex-col">
-  <header class="bg-white shadow-md sticky top-0 z-10">
-      <nav class="container mx-auto p-4 flex justify-between items-center">
-          <a href="index.html" class="flex items-center">
-              <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
-          </a>
-          <ul class="flex space-x-6 text-sm font-medium">
-              <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
-              <li><a href="category.html" class="text-gray-700 hover:text-pink-600 transition">Category</a></li>
-              <li><a href="cart.html" class="text-gray-700 hover:text-pink-600 transition">Shopping Cart</a></li>
-              <li><a href="checkout.html" class="text-gray-700 hover:text-pink-600 transition">Checkout</a></li>
-              <li><a href="contact.html" class="text-gray-700 hover:text-pink-600 transition">Contact</a></li>
-              <li><a href="login.html" class="text-pink-600 font-semibold transition border-b-2 border-pink-600">Login</a></li>
-          </ul>
-      </nav>
-  </header>
+<body class="flex flex-col min-h-screen">
+    
+    <main class="login-container">
+        <div class="w-full max-w-md bg-white p-8 md:p-10 rounded-xl shadow-2xl border-t-4 border-pink-600">
+            <div class="text-center mb-8">
+                <a href="index.html" class="inline-block">
+                    <img src="assets/img/logo.png" alt="Glamora Logo" class="h-10 w-auto mx-auto" onerror="this.onerror=null;this.src='https://placehold.co/100x40/701a75/fff?text=Glamora';" />
+                </a>
+                <h2 class="text-3xl font-playfair font-bold text-gray-800 mt-4">Login ke Akun Anda</h2>
+                <p class="text-gray-500 text-sm mt-1">Belum punya akun? <a href="signup.html" class="text-pink-600 hover:underline font-medium">Daftar sekarang</a></p>
+            </div>
 
-  <main class="login-container flex-grow">
-    <section class="login-box w-full max-w-md bg-white p-8 md:p-10 rounded-xl shadow-2xl border-t-4 border-pink-500">
-      <h2 class="text-3xl font-playfair font-bold text-gray-800 mb-2 text-center">Welcome Back</h2>
-      <p class="text-center text-gray-500 mb-8">Log in to your account to continue shopping.
-</p>
-      
-      <form class="space-y-5" id="loginForm">
+            <form id="loginForm" class="space-y-5">
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500">
+                </div>
+                
+                <div class="password-field">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
+                    <input type="password" id="password" name="password" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500">
+                    <span class="toggle-password" id="togglePassword">Show</span>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                            Ingat saya
+                        </label>
+                    </div>
+                    <a href="#" class="text-sm font-medium text-pink-600 hover:text-pink-500">
+                        Lupa Kata Sandi?
+                    </a>
+                </div>
+
+                <button type="submit" id="loginButton" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition">
+                    Login
+                </button>
+            </form>
+            
+            <p id="authMessage" class="text-center mt-5 text-sm font-medium hidden"></p>
+        </div>
+    </main>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // =======================================================
+        // ⚠️ GANTI DENGAN KUNCI SUPABASE ANDA ⚠️
+        // =======================================================
+        const SUPABASE_URL = 'https://pykzuzlcqumlpbxuhvnk.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a3p1emxjcXVtbHBieHVodm5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyNTQ4NjAsImV4cCI6MjA3NDgzMDg2MH0.P8ofbHa0UhBTwCRDdpX8c8-zx8gNwKFpDln0VsPYXTc'; 
         
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name:</label>
-          <input type="text" id="name" placeholder="Your username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required />
-        </div>
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email:</label>
-          <input type="email" id="email" placeholder="ex@gmail.com" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required>
-        </div>
+        const loginForm = document.getElementById("loginForm");
+        const togglePassword = document.getElementById("togglePassword");
+        const passwordField = document.getElementById("password");
+        const authMessage = document.getElementById("authMessage");
+        const loginButton = document.getElementById("loginButton");
 
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password:</label>
-          <div class="password-field">
-            <input type="password" id="password" placeholder="Input your password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 pr-12" required>
-            <span class="toggle-password" id="togglePassword">Show</span>
-          </div>
-        </div>
-
-        <div class="flex justify-between items-center text-sm">
-          <label class="flex items-center space-x-2 text-gray-600">
-            <input type="checkbox" class="rounded text-pink-500 focus:ring-pink-500">
-            <span>Ingat saya</span>
-          </label>
-          <a href="#" class="text-pink-500 hover:text-pink-700 transition">Lupa password?</a>
-        </div>
-
-        <button type="submit" class="w-full py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition shadow-lg">
-          Masuk &rarr;
-        </button>
-      </form>
-
-      <p class="text-center text-sm mt-6 text-gray-600">
-          Belum punya akun? <a href="signup.html" class="text-pink-600 hover:underline font-medium">Daftar sekarang</a>
-      </p>
-    </section>
-  </main>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const loginForm = document.getElementById("loginForm");
-      const togglePassword = document.getElementById("togglePassword");
-      const passwordField = document.getElementById("password");
-
-      function customAlert(message) {
-        alert(message); 
-      }
-
-      // 1. Toggle Password Visibility
-      togglePassword.addEventListener("click", function () {
-        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordField.setAttribute('type', type);
-        this.textContent = type === 'password' ? 'Show' : 'Hide';
-      });
-
-
-      // 2. Handle Login Submission (Simulasi localStorage)
-      loginForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-
-        if (name === "" || email === "" || password === "") {
-          customAlert("Isi semua data terlebih dahulu.");
-          return;
+        // Fungsi untuk menampilkan pesan di UI
+        function showAuthMessage(message, isError = true) {
+            authMessage.textContent = message;
+            authMessage.classList.remove('hidden', 'text-red-500', 'text-green-500');
+            authMessage.classList.toggle('text-red-500', isError);
+            authMessage.classList.toggle('text-green-500', !isError);
+            
+            setTimeout(() => {
+                authMessage.classList.add('hidden');
+            }, 5000);
         }
-        
-        // Simulasikan login berhasil
-        localStorage.setItem("isLoggedIn", "true"); 
-        localStorage.setItem("userName", name); 
-        
-        alert("Login berhasil! (Simulasi LocalStorage). Anda akan dialihkan ke halaman utama.");
-        
-        // Alihkan ke halaman utama
-        window.location.href = "index.html";
-      });
-    });
-  </script>
+
+        // 1. Toggle Password Visibility
+        togglePassword.addEventListener("click", function () {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
+
+
+        // 2. Handle Login Submission (Integrasi Supabase)
+        loginForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            
+            // Tampilkan status loading
+            loginButton.textContent = 'Memuat...';
+            loginButton.disabled = true;
+
+            if (email === "" || password === "") {
+                showAuthMessage("Mohon lengkapi email dan kata sandi.", true);
+                loginButton.textContent = 'Login';
+                loginButton.disabled = false;
+                return;
+            }
+
+            // Panggil fungsi signInWithPassword Supabase (memeriksa kredensial ke server)
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                // Autentikasi Gagal (Password atau Email salah)
+                showAuthMessage(`Login Gagal: ${error.message}`, true);
+                loginButton.textContent = 'Login';
+                loginButton.disabled = false;
+
+            } else if (data.user) {
+                // Login berhasil
+                
+                // Ambil Nama dari tabel 'profiles'
+                const userId = data.user.id;
+                const { data: profileData, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('name') // Mengambil kolom 'name' dari tabel profiles
+                    .eq('id', userId)
+                    .single();
+
+                if (profileError && profileError.code !== 'PGRST116') { // PGRST116 adalah "tidak ada baris"
+                    console.error("Gagal mengambil profil:", profileError);
+                    // Jika gagal ambil nama, gunakan email sebagai fallback
+                    localStorage.setItem("userName", data.user.email); 
+                } else if (profileData) {
+                    // Simpan nama pengguna yang valid
+                    localStorage.setItem("userName", profileData.name); 
+                } else {
+                    // Jika profil tidak ditemukan, gunakan email
+                    localStorage.setItem("userName", data.user.email);
+                }
+
+                // ⭐️ LOGIKA KERANJANG PERSISTEN: Muat dari Supabase
+                const { data: cartData, error: cartError } = await supabase
+                    .from('carts')
+                    .select('product_id, quantity, price, name, image') // Sesuaikan kolom, 'name' & 'price' diasumsikan ada di tabel carts atau relasi
+                    .eq('user_id', userId);
+                
+                if (cartError) {
+                    console.error("Gagal memuat keranjang:", cartError);
+                    // Tidak perlu hentikan login, keranjang akan kosong
+                } else if (cartData) {
+                    // Simpan data keranjang yang dimuat ke sessionStorage agar bisa diakses di cart.html
+                    sessionStorage.setItem("cartItems", JSON.stringify(cartData));
+                }
+
+                // Tandai login berhasil di localStorage
+                localStorage.setItem("isLoggedIn", "true"); 
+                
+                showAuthMessage("Login berhasil! Mengalihkan...", false);
+                
+                // Alihkan ke halaman utama setelah jeda
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1000);
+                
+            } else {
+                // Kasus lain yang tidak terduga
+                showAuthMessage("Terjadi kesalahan tak terduga saat login.", true);
+                loginButton.textContent = 'Login';
+                loginButton.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

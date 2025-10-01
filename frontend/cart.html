@@ -6,6 +6,7 @@
     <title>Keranjang - Glamora</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Menggunakan Poppins sebagai default, Playfair untuk judul */
         body {
@@ -60,7 +61,8 @@
         <div class="cart-layout">
             <section class="space-y-4">
                 <div id="cartItems">
-                    </div>
+                    <div class="p-8 bg-white rounded-xl shadow-lg text-center text-gray-500 font-medium" id="loadingMessage">Memuat keranjang Anda...</div>
+                </div>
     
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 mt-6 bg-white rounded-xl shadow-md border border-gray-100">
                     <a href="category.html" class="text-pink-600 hover:text-pink-700 font-medium mb-4 sm:mb-0">
@@ -70,7 +72,7 @@
                         <button class="px-5 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition shadow-md font-medium" id="clearCartBtn">
                             Clear Cart
                         </button>
-                        <button class="px-6 py-2 rounded-full text-white bg-pink-600 hover:bg-pink-700 transition shadow-xl font-semibold" id="checkoutBtn">
+                        <button class="px-6 py-2 rounded-full text-white bg-pink-600 hover:bg-pink-700 transition shadow-xl font-semibold" id="checkoutBtn" disabled>
                             Lanjut ke Checkout
                         </button>
                     </div>
@@ -100,83 +102,190 @@
         </div>
     </footer>
 
-    <script>
-        // const SHIPPING_COST = 20000; // DIHAPUS
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const cart = JSON.parse(localStorage.getItem("cart")) || [];
-            const cartContainer = document.getElementById("cartItems");
-            const subtotalDisplay = document.getElementById("subtotalDisplay");
-            const totalGrandDisplay = document.getElementById("totalGrandDisplay");
-            const clearCartBtn = document.getElementById("clearCartBtn");
-            const checkoutBtn = document.getElementById("checkoutBtn");
+        // =======================================================
+        // ⚠️ GANTI DENGAN KUNCI SUPABASE ANDA ⚠️
+        // =======================================================
+        const SUPABASE_URL = 'https://pykzuzlcqumlpbxuhvnk.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a3p1emxjcXVtbHBieHVodm5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyNTQ4NjAsImV4cCI6MjA3NDgzMDg2MH0.P8ofbHa0UhBTwCRDdpX8c8-zx8gNwKFpDln0VsPYXTc'; 
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // --- Global Helper Functions ---
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
 
-            // Fungsi untuk mengurus status login (agar navbar konsisten)
+        function handleLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userName");
+            // Supabase client logout
+            supabase.auth.signOut().then(() => {
+                location.reload(); 
+            });
+        }
+        
+        function updateAuthStatus() {
             const loginBtn = document.getElementById("loginBtn");
-            const isLoggedIn = localStorage.getItem("isLoggedIn"); 
-            const userName = localStorage.getItem("userName"); 
+            if (!loginBtn) return;
+            
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            const userName = localStorage.getItem("userName");
 
-            if (isLoggedIn === "true" && userName && loginBtn) {
+            if (isLoggedIn && userName) {
                 loginBtn.textContent = `Hi, ${userName.split(' ')[0]}`; 
                 loginBtn.href = "#"; 
                 loginBtn.classList.add('bg-green-500', 'hover:bg-green-600');
                 loginBtn.classList.remove('bg-pink-500', 'hover:bg-pink-600');
+                
+                loginBtn.removeEventListener('click', handleLogout); 
+                loginBtn.addEventListener('click', handleLogout); 
+                
+            } else {
+                loginBtn.textContent = `Login`; 
+                loginBtn.href = "login.html";
+                loginBtn.classList.add('bg-pink-500', 'hover:bg-pink-600');
+                loginBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                loginBtn.removeEventListener('click', handleLogout); 
             }
+        }
+        // --- Akhir Global Helper Functions ---
+        
+        document.addEventListener("DOMContentLoaded", async function () {
             
-            // Fungsi untuk menghitung dan menampilkan total
-            function updateSummary(currentSubtotal) {
-                // HANYA MENGGUNAKAN SUBTOTAL SEBAGAI TOTAL KESELURUHAN
-                const grandTotal = currentSubtotal; 
-                subtotalDisplay.textContent = "Rp" + currentSubtotal.toLocaleString("id-ID");
-                totalGrandDisplay.textContent = "Rp" + grandTotal.toLocaleString("id-ID");
-            }
+            updateAuthStatus();
+            
+            const cartContainer = document.getElementById("cartItems");
+            const loadingMessage = document.getElementById("loadingMessage");
+            const subtotalDisplay = document.getElementById("subtotalDisplay");
+            const totalGrandDisplay = document.getElementById("totalGrandDisplay");
+            const clearCartBtn = document.getElementById("clearCartBtn");
+            const checkoutBtn = document.getElementById("checkoutBtn");
+            
+            // Cek apakah user sudah login
+            const { data: { user } } = await supabase.auth.getUser();
 
-            if (cart.length === 0) {
-                cartContainer.innerHTML = '<div class="p-8 bg-white rounded-xl shadow-lg text-center text-gray-500 font-medium"><p>Keranjang belanja Anda kosong. Yuk, cari produk favorit Anda!</p></div>';
-                updateSummary(0);
+            if (!user) {
+                // Tampilkan pesan jika belum login
+                loadingMessage.innerHTML = '<p class="text-red-500 font-bold">Anda harus <a href="login.html" class="text-pink-600 hover:underline">login</a> untuk melihat keranjang Anda.</p>';
                 checkoutBtn.disabled = true;
                 checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                return;
+                clearCartBtn.disabled = true;
+                clearCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                return; 
             }
 
-            let subtotal = 0;
+            // Fungsi untuk menghitung dan menampilkan total
+            function updateSummary(currentSubtotal) {
+                const grandTotal = currentSubtotal; 
+                subtotalDisplay.textContent = formatRupiah(currentSubtotal);
+                totalGrandDisplay.textContent = formatRupiah(grandTotal);
+            }
 
-            cart.forEach(item => {
-                const totalHarga = item.price * item.quantity;
-                subtotal += totalHarga;
+            let cart = []; // Variabel global untuk menyimpan item dari Supabase
 
-                const itemEl = document.createElement("div");
-                // Class Tailwind untuk tampilan kartu keranjang yang elegan
-                itemEl.classList.add("cart-card", "bg-white", "p-4", "rounded-xl", "shadow-lg", "flex", "space-x-4", "items-center", "border", "border-pink-100");
+            // ⭐️ LOGIKA BARU: Mengambil keranjang dari Supabase
+            async function loadCart() {
+                loadingMessage.style.display = 'block';
+                cartContainer.innerHTML = ''; // Kosongkan
+                cartContainer.appendChild(loadingMessage); // Tampilkan loading
                 
-                itemEl.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-md flex-shrink-0" onerror="this.onerror=null;this.src='https://placehold.co/80x80/f0abfc/701a75?text=Img';" />
-                    <div class="flex-grow">
-                        <h4 class="text-lg font-semibold text-gray-800">${item.name}</h4>
-                        
-                        <p class="text-sm text-gray-500">Harga Satuan: Rp${item.price.toLocaleString("id-ID")}</p>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        <p class="text-md text-gray-700">Jumlah: <span class="font-medium">${item.quantity}</span></p>
-                        <p class="text-xl font-bold text-pink-600 mt-1">Rp${totalHarga.toLocaleString("id-ID")}</p>
-                    </div>
-                `;
-                cartContainer.appendChild(itemEl);
+                const { data, error } = await supabase
+                    .from('carts')
+                    .select('*') // Ambil semua kolom
+                    .eq('user_id', user.id); // Filter berdasarkan user yang sedang login (RLS harus aktif)
+
+                loadingMessage.style.display = 'none';
+
+                if (error) {
+                    console.error("Gagal memuat keranjang:", error.message);
+                    cartContainer.innerHTML = '<div class="p-8 bg-white rounded-xl shadow-lg text-center text-red-500 font-medium"><p>Gagal memuat keranjang. Pastikan RLS di tabel carts sudah benar.</p></div>';
+                    updateSummary(0);
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    return;
+                }
+
+                cart = data || []; // Simpan data keranjang
+                let subtotal = 0;
+
+                if (cart.length === 0) {
+                    cartContainer.innerHTML = '<div class="p-8 bg-white rounded-xl shadow-lg text-center text-gray-500 font-medium"><p>Keranjang belanja Anda kosong. Yuk, cari produk favorit Anda!</p></div>';
+                    updateSummary(0);
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    clearCartBtn.disabled = true;
+                    clearCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    return;
+                }
+                
+                checkoutBtn.disabled = false;
+                checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                clearCartBtn.disabled = false;
+                clearCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                cart.forEach(item => {
+                    const totalHarga = item.price * item.quantity;
+                    subtotal += totalHarga;
+
+                    const itemEl = document.createElement("div");
+                    itemEl.classList.add("cart-card", "bg-white", "p-4", "rounded-xl", "shadow-lg", "flex", "space-x-4", "items-center", "border", "border-pink-100");
+                    
+                    itemEl.innerHTML = `
+                        <img src="${item.image || 'https://placehold.co/80x80/f0abfc/701a75?text=Img'}" alt="${item.name}" class="w-20 h-20 object-cover rounded-md flex-shrink-0" onerror="this.onerror=null;this.src='https://placehold.co/80x80/f0abfc/701a75?text=Img';" />
+                        <div class="flex-grow">
+                            <h4 class="text-lg font-semibold text-gray-800">${item.name}</h4>
+                            <p class="text-sm text-gray-500">Harga Satuan: ${formatRupiah(item.price)}</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-md text-gray-700">Jumlah: <span class="font-medium">${item.quantity}</span></p>
+                            <p class="text-xl font-bold text-pink-600 mt-1">${formatRupiah(totalHarga)}</p>
+                        </div>
+                    `;
+                    cartContainer.appendChild(itemEl);
+                });
+
+                updateSummary(subtotal);
+            }
+
+            // Jalankan load cart saat halaman dimuat
+            loadCart();
+
+            // ⭐️ LOGIKA BARU: Event Listener untuk Clear Cart (menghapus dari Supabase)
+            clearCartBtn.addEventListener("click", async () => {
+                if (!confirm("Apakah Anda yakin ingin mengosongkan keranjang?")) return;
+                
+                clearCartBtn.textContent = 'Clearing...';
+                clearCartBtn.disabled = true;
+                
+                const { error } = await supabase
+                    .from('carts')
+                    .delete()
+                    .eq('user_id', user.id); // Hapus semua item user ini (RLS penting!)
+
+                if (error) {
+                    console.error("Gagal mengosongkan keranjang:", error.message);
+                    alert("Gagal mengosongkan keranjang. Coba lagi.");
+                } else {
+                    console.log("Keranjang dikosongkan dari Supabase.");
+                }
+                
+                // Reload halaman untuk refresh tampilan
+                location.reload(); 
             });
 
-            // Update ringkasan total setelah semua item dirender
-            updateSummary(subtotal);
-
-            // Event Listener untuk Clear Cart
-            clearCartBtn.addEventListener("click", () => {
-                console.log("Keranjang dikosongkan.");
-                localStorage.removeItem("cart");
-                location.reload();
-            });
-
-            // Event Listener untuk Checkout (memastikan data yang benar dikirim)
+            // Event Listener untuk Checkout (menyimpan data Supabase ke Session Storage sebelum redirect)
             checkoutBtn.addEventListener("click", () => {
-                sessionStorage.setItem("cartItems", JSON.stringify(cart)); // Menggunakan cartItems untuk kompatibilitas
+                // Simpan data keranjang yang sudah di-fetch dari Supabase ke Session Storage
+                // agar halaman checkout (yang tidak menggunakan Supabase) dapat membacanya.
+                sessionStorage.setItem("cartItems", JSON.stringify(cart)); 
                 window.location.href = "checkout.html";
             });
         });
