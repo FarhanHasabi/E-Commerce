@@ -129,15 +129,13 @@
             // Jika belum login, biarkan atribut default di HTML tetap login.html
         });
         
-        // [KEDUA]: LOGIKA CAROUSEL (Dipertahankan)
+        // [KEDUA]: LOGIKA CAROUSEL
         let currentSlide = 0;
         const SLIDE_INTERVAL = 5000; 
         const MAX_PRODUCTS = 5; 
         let carouselTimer;
         const API_BASE_URL = window.location.origin;
 
-        // ... (Fungsi updateCarousel, startCarouselAutoPlay, setupCarouselControls, createProductCard, dan fetchProducts dipertahankan dari kode Anda sebelumnya)
-        
         function updateCarousel(track, totalSlides) {
             if (totalSlides === 0) return;
             if (currentSlide >= totalSlides) {
@@ -183,11 +181,47 @@
             }
         }
         
+        // --- FUNGSI BARU (LISTENER UNTUK TOMBOL CHECKOUT) ---
+        function attachBuyNowHomeListener() {
+            document.querySelectorAll('.buy-now-home-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // 1. Ambil data produk
+                    const productData = JSON.parse(this.getAttribute('data-product').replace(/&apos;/g, "'"));
+                    
+                    // 2. Buat keranjang sementara (hanya berisi 1 item)
+                    const singleItemCart = [{
+                        id: productData.id,
+                        name: productData.name,
+                        price: productData.price,
+                        image: productData.image,
+                        size: 'M', // Defaultkan ukuran (atau sesuaikan)
+                        quantity: 1
+                    }];
+
+                    // 3. Simpan keranjang sementara ke Session Storage
+                    sessionStorage.setItem("cartItems", JSON.stringify(singleItemCart));
+                    
+                    // 4. Redirect ke halaman checkout
+                    window.location.href = "checkout.html";
+                });
+            });
+        }
+        
+        // --- FUNGSI CREATE PRODUCT CARD (DIUBAH TOMBOLNYA) ---
         function createProductCard(product) {
             const card = document.createElement('div');
             card.className = 'carousel-item flex flex-col md:flex-row items-center p-8';
             const imageUrl = product.image || `https://placehold.co/500x700/f0abfc/701a75?text=${product.name ? product.name.substring(0, 1).toUpperCase() : 'P'}`;
             const priceFormatted = (product.price || 0).toLocaleString('id-ID');
+            
+            // Siapkan data produk yang akan disimpan di atribut tombol
+            const productDataAttr = `data-product='${JSON.stringify({ 
+                id: product.id || 'detail', 
+                name: product.name, 
+                price: product.price, 
+                image: imageUrl 
+            }).replace(/'/g, "&apos;")}'`;
+
 
             card.innerHTML = `
                 <div class="md:w-1/2 w-full flex justify-center mb-6 md:mb-0">
@@ -202,14 +236,15 @@
                     <p class="text-4xl font-extrabold text-pink-600 mb-6">
                         Rp ${priceFormatted}
                     </p>
-                    <a href="product.html?id=${product.id || 'detail'}" class="inline-block bg-pink-600 text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-pink-700 transition duration-300 shadow-xl transform hover:scale-105">
-                        Lihat Detail & Beli
-                    </a>
+                    <button class="buy-now-home-btn inline-block bg-pink-600 text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-pink-700 transition duration-300 shadow-xl transform hover:scale-105" ${productDataAttr}>
+                        Checkout
+                    </button>
                 </div>
             `;
             return card;
         }
 
+        // --- FUNGSI FETCH PRODUCTS (DITAMBAH PEMANGGILAN LISTENER) ---
         async function fetchProducts() {
             const track = document.getElementById('product-carousel-track');
             const loadingIndicator = document.getElementById('loading-indicator');
@@ -244,6 +279,8 @@
                 setupCarouselControls(track, totalSlides);
                 startCarouselAutoPlay(track, totalSlides);
                 
+                // Panggil listener klik setelah semua kartu produk dibuat
+                attachBuyNowHomeListener(); 
 
             } catch (error) {
                 console.error("Gagal mengambil produk:", error); 

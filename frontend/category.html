@@ -475,9 +475,7 @@
                         <div>
                             <img src="${imageUrl}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/fbcfe8/be185d?text=Image+Not+Found';" alt="${product.name}" class="w-full h-48 object-cover object-center border-b border-gray-100 transform group-hover:scale-[1.05] transition duration-500">
                             <div class="p-4 text-center">
-                                <a href="product.html?sku=${sku}" class="block">
-                                    <h4 class="text-lg font-semibold text-gray-800 mb-1 truncate hover:text-pink-600 transition">${product.name || 'Nama Produk'}</h4>
-                                </a>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-1 truncate">${product.name || 'Nama Produk'}</h4>
                                 <p class="text-sm text-gray-500 mb-3 truncate">${product.brand || 'No Brand'}</p>
                                 <p class="text-xl font-bold text-pink-600">${priceFormatted}</p>
                             </div>

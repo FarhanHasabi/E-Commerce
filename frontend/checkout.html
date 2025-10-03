@@ -107,11 +107,11 @@
                         </div>
                         <div>
                             <label for="postalCode" class="block text-sm font-medium text-gray-700">Kode Pos</label>
-                            <input type="text" id="postalCode" name="postalCode" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500">
+                            <input type="number" id="postalCode" name="postalCode" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500">
                         </div>
                         <div>
                             <label for="phone" class="block text-sm font-medium text-gray-700">Nomor Telepon</label>
-                            <input type="tel" id="phone" name="phone" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500">
+                            <input type="number" id="phone" name="phone" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-pink-500 focus:ring-pink-500">
                         </div>
                     </div>
 
@@ -198,9 +198,8 @@
             msgEl.className = `custom-message ${type}`;
             msgEl.textContent = message;
             
-            document.body.appendChild(msgEl);
-            
             // Tampilkan dengan transisi
+            document.body.appendChild(msgEl);
             setTimeout(() => {
                 msgEl.classList.add('show');
             }, 10);
@@ -373,38 +372,18 @@
                     return;
                 }
                 
-                // ⭐️ LOGIKA KRITIS: Hapus keranjang dari Supabase
-                try {
-                    // Ini mengosongkan keranjang di database, sehingga persisten.
-                    const { error } = await supabase
-                        .from('carts')
-                        .delete()
-                        .eq('user_id', user.id); // Hapus semua item keranjang user ini
-                    
-                    if (error) throw error;
+                // Ambil data form untuk diteruskan ke simulasi pembayaran
+                const formData = new FormData(checkoutForm);
+                const orderData = Object.fromEntries(formData.entries());
+                orderData.items = cartItems;
+                orderData.totalAmount = total;
+                orderData.userId = user.id; // Tambahkan ID user
 
-                    // 1. Get form data (simulated)
-                    const formData = new FormData(checkoutForm);
-                    const orderData = Object.fromEntries(formData.entries());
-                    orderData.items = cartItems;
-                    orderData.totalAmount = total;
-                    orderData.userId = user.id; // Tambahkan ID user
-
-                    // 2. Clear cart status dan simpan data pesanan
-                    sessionStorage.removeItem("cartItems"); 
-                    localStorage.removeItem("cart"); // Hapus keranjang utama di localStorage (jika masih ada)
-                    localStorage.setItem("lastOrderData", JSON.stringify(orderData)); // Simpan data pesanan (simulasi)
-
-                    // 3. Redirect (simulated confirmation)
-                    showCustomMessage("Pesanan berhasil ditempatkan! Keranjang telah dikosongkan.", 'success');
-                    setTimeout(() => {
-                        window.location.href = "index.html?order=success";
-                    }, 1500);
-
-                } catch (error) {
-                    console.error("Gagal saat Checkout atau menghapus keranjang Supabase:", error);
-                    showCustomMessage(`Checkout gagal: ${error.message}. Keranjang mungkin belum terhapus.`, 'warning');
-                }
+                // Simpan data yang diperlukan untuk simulasi pembayaran di sessionStorage
+                sessionStorage.setItem('simulatedPaymentData', JSON.stringify(orderData));
+                
+                // Redirect ke halaman simulasi pembayaran
+                window.location.href = 'payment-simulation.html';
             });
         });
     </script>

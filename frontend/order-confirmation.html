@@ -1,99 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order Confirmation - Glamora</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background-color: #fdf3f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation - Glamora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .confirmation-container {
+            width: 100%;
+            max-width: 380px; /* Reduced width */
+            padding: 20px; /* Reduced padding */
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.06);
+            border-radius: 10px;
+            text-align: center;
+            border: 1.5px solid #ec4899; /* Thinner border */
+        }
 
-    .confirmation-container {
-      width: 100%;
-      max-width: 600px;
-      padding: 40px;
-      background-color: white;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      border-radius: 12px;
-      text-align: center;
-    }
+        .confirmation-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; /* Smaller font size */
+            margin-bottom: 6px;
+            color: #333;
+        }
 
-    .confirmation-box h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      margin-bottom: 10px;
-      color: #7a004c;
-    }
+        .confirmation-box p {
+            font-size: 12px; /* Smaller font size */
+            margin-bottom: 12px;
+            color: #555;
+        }
 
-    .confirmation-box p {
-      font-size: 16px;
-      margin-bottom: 20px;
-      color: #333;
-    }
+        .order-status, .delivery-estimate, .order-details {
+            margin: 10px 0; /* Reduced margin */
+            padding: 8px; /* Reduced padding */
+            border-radius: 8px;
+            background-color: #fdf2f8;
+            border: 1px solid #fbcfe8;
+            text-align: left;
+        }
+        .order-status h3, .delivery-estimate h3, .order-details h3 {
+            font-size: 14px; /* Smaller font size */
+            margin-bottom: 6px;
+            color: #ec4899;
+            font-weight: 600;
+        }
 
-    .order-status, .delivery-estimate {
-      margin: 20px 0;
-    }
+        .order-details div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.2rem; /* Reduced margin */
+            font-size: 0.75rem; /* Smaller font size */
+        }
+        .order-details div span:first-child {
+            color: #666;
+        }
+        .order-details div span:last-child {
+            font-weight: 500;
+        }
+        .order-details .item-list {
+            margin-top: 0.5rem;
+            border-top: 1px dashed #fbcfe8;
+            padding-top: 0.5rem;
+            max-height: 100px; /* Reduced max-height */
+            overflow-y: auto;
+        }
+        .order-details .item-list p {
+            margin: 0.1rem 0;
+            font-size: 0.7rem; /* Smaller font size */
+            display: flex;
+            justify-content: space-between;
+        }
+        .order-details .item-list p span:first-child {
+            color: #444;
+        }
+        .order-details .item-list p span:last-child {
+            font-weight: 500;
+        }
 
-    .order-status h3, .delivery-estimate h3 {
-      font-size: 18px;
-      margin-bottom: 5px;
-      color: #7a004c;
-    }
+        .btn-primary {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 16px; /* Reduced padding */
+            background-color: #ec4899;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            font-size: 14px; /* Added font-size */
+        }
 
-    .btn-accent {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 12px 24px;
-      background-color: #7a004c;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-accent:hover {
-      background-color: #a3006e;
-    }
-  </style>
+        .btn-primary:hover {
+            background-color: #db2777;
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+    </style>
 </head>
 <body>
-  <main class="confirmation-container">
-    <section class="confirmation-box">
-      <h2>Thank you for shopping at Glamora!</h2>
-      <p>Your order has been successfully placed. Please wait while your items are being prepared for shipment.</p>
+    <main class="confirmation-container">
+        <section class="confirmation-box">
+            <h2 id="confirmationTitle"></h2>
+            <p id="confirmationMessage"></p>
 
-      <div class="order-status">
-        <h3>🛍️ Order Status</h3>
-        <p id="statusText">Loading...</p>
-      </div>
+            <div class="order-status">
+                <h3>🛍️ Status Pembayaran</h3>
+                <p id="statusText">Memuat...</p>
+            </div>
 
-      <div class="delivery-estimate">
-        <h3>📦 Estimated Delivery</h3>
-        <p id="estimateText">Loading...</p>
-      </div>
+            <div class="order-details">
+                <h3>📝 Detail Pesanan Anda</h3>
+                <div>
+                    <span>Nomor Pesanan:</span>
+                    <span id="orderIdDisplay">#GLM-XXXXX</span>
+                </div>
+                <div>
+                    <span>Total Pembayaran:</span>
+                    <span id="totalAmountDisplay">Rp 0</span>
+                </div>
+                <div>
+                    <span>Metode Pembayaran:</span>
+                    <span id="paymentMethodDisplay"></span>
+                </div>
+                <div>
+                    <span>Nama Penerima:</span>
+                    <span id="recipientNameDisplay"></span>
+                </div>
+                <div>
+                    <span>Alamat Pengiriman:</span>
+                    <span id="shippingAddressDisplay"></span>
+                </div>
+                <div class="item-list">
+                    <h4>Item yang Dipesan:</h4>
+                    <div id="orderedItemsList">
+                        </div>
+                </div>
+            </div>
 
-      <a href="index.html" class="btn-accent">Back to Home</a>
-    </section>
-  </main>
+            <div class="delivery-estimate">
+                <h3>📦 Estimasi Pengiriman</h3>
+                <p id="estimateText">Memuat...</p>
+            </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const status = sessionStorage.getItem("orderStatus") || "Processing";
-      const estimate = sessionStorage.getItem("deliveryEstimate") || "Unknown";
+            <div id="actionButtons">
+                <a href="index.html" class="btn-primary">Kembali ke Beranda</a>
+            </div>
+        </section>
+    </main>
 
-      document.getElementById("statusText").textContent = status;
-      document.getElementById("estimateText").textContent = estimate;
-    });
-  </script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // =======================================================
+        // ⚠️ GANTI DENGAN KUNCI SUPABASE ANDA ⚠️
+        // =======================================================
+        const SUPABASE_URL = 'https://pykzuzlcqumlpbxuhvnk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5a3p1emxjcXVtbHBieHVodm5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyNTQ4NjAsImV4cCI6MjA3NDgzMDg2MH0.P8ofbHa0UhBTwCRDdpX8c8-zx8gNwKFpDln0VsPYXTc';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            const confirmationTitle = document.getElementById("confirmationTitle");
+            const confirmationMessage = document.getElementById("confirmationMessage");
+            const statusText = document.getElementById("statusText");
+            const estimateText = document.getElementById("estimateText");
+            const orderIdDisplay = document.getElementById("orderIdDisplay");
+            const totalAmountDisplay = document.getElementById("totalAmountDisplay");
+            const paymentMethodDisplay = document.getElementById("paymentMethodDisplay");
+            const recipientNameDisplay = document.getElementById("recipientNameDisplay");
+            const shippingAddressDisplay = document.getElementById("shippingAddressDisplay");
+            const orderedItemsList = document.getElementById("orderedItemsList");
+            const actionButtons = document.getElementById("actionButtons");
+
+            const paymentStatus = sessionStorage.getItem("paymentStatus");
+            const orderData = JSON.parse(sessionStorage.getItem('simulatedPaymentData'));
+
+            function formatRupiah(number) {
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(number);
+            }
+
+            function getPaymentMethodName(methodValue) {
+                switch (methodValue) {
+                    case 'transfer': return 'Transfer Bank (BCA / Mandiri)';
+                    case 'dana': return 'E-Wallet (Dana / GoPay)';
+                    case 'cod': return 'Cash On Delivery (COD)';
+                    default: return 'Tidak Diketahui';
+                }
+            }
+
+            if (orderData) {
+                orderIdDisplay.textContent = `#GLM-${Math.floor(Math.random() * 100000)}`;
+                totalAmountDisplay.textContent = formatRupiah(orderData.totalAmount);
+                paymentMethodDisplay.textContent = getPaymentMethodName(orderData.paymentMethod);
+                recipientNameDisplay.textContent = orderData.fullName;
+                shippingAddressDisplay.textContent = `${orderData.address}, ${orderData.city}, ${orderData.postalCode}`;
+                
+                if (orderData.items && orderData.items.length > 0) {
+                    orderedItemsList.innerHTML = '';
+                    orderData.items.forEach(item => {
+                        const itemEl = document.createElement('p');
+                        itemEl.innerHTML = `<span>${item.name} x ${item.quantity}</span><span>${formatRupiah(item.price * item.quantity)}</span>`;
+                        orderedItemsList.appendChild(itemEl);
+                    });
+                } else {
+                    orderedItemsList.innerHTML = '<p>Tidak ada item yang dipesan.</p>';
+                }
+            } else {
+                document.querySelector('.order-details').style.display = 'none';
+                orderIdDisplay.textContent = 'N/A';
+                totalAmountDisplay.textContent = 'N/A';
+                paymentMethodDisplay.textContent = 'N/A';
+                recipientNameDisplay.textContent = 'N/A';
+                shippingAddressDisplay.textContent = 'N/A';
+                orderedItemsList.innerHTML = '<p>Detail pesanan tidak tersedia.</p>';
+            }
+
+
+            if (paymentStatus === 'success') {
+                confirmationTitle.textContent = "Pembayaran Berhasil!";
+                confirmationMessage.textContent = "Terima kasih telah berbelanja di Glamora! Pesanan Anda telah berhasil ditempatkan dan sedang diproses untuk pengiriman.";
+                statusText.textContent = "Pembayaran Anda telah berhasil dikonfirmasi.";
+                statusText.classList.add('text-green-600', 'font-bold');
+                estimateText.textContent = "Estimasi pengiriman: 3-5 hari kerja setelah verifikasi pembayaran.";
+                estimateText.classList.add('text-gray-700');
+
+                if (orderData && orderData.userId) {
+                    try {
+                        const { error } = await supabase
+                            .from('carts')
+                            .delete()
+                            .eq('user_id', orderData.userId);
+                        
+                        if (error) {
+                            console.error("Gagal menghapus keranjang Supabase setelah pembayaran:", error);
+                        } else {
+                            console.log("Keranjang Supabase berhasil dikosongkan setelah pembayaran.");
+                        }
+                    } catch (e) {
+                        console.error("Kesalahan saat menghapus keranjang Supabase:", e);
+                    }
+                }
+
+                sessionStorage.removeItem("cartItems");
+                localStorage.removeItem("cart");
+                sessionStorage.removeItem("simulatedPaymentData");
+                sessionStorage.removeItem("paymentStatus");
+                
+            } else if (paymentStatus === 'failed') {
+                confirmationTitle.textContent = "Pembayaran Gagal!";
+                confirmationMessage.textContent = "Mohon maaf, pembayaran Anda tidak berhasil diproses. Pesanan Anda belum dikonfirmasi.";
+                statusText.textContent = "Pembayaran Anda gagal. Silakan coba lagi.";
+                statusText.classList.add('text-red-600', 'font-bold');
+                estimateText.textContent = "Pesanan Anda belum dikonfirmasi. Silakan lakukan pembayaran ulang.";
+                estimateText.classList.add('text-gray-700');
+                
+                actionButtons.innerHTML = `
+                    <a href="checkout.html" class="btn-primary btn-secondary mr-4">Kembali ke Checkout</a>
+                    <a href="index.html" class="btn-primary">Kembali ke Beranda</a>
+                `;
+
+                sessionStorage.removeItem("paymentStatus");
+            } else {
+                confirmationTitle.textContent = "Status Pesanan Tidak Diketahui";
+                confirmationMessage.textContent = "Kami tidak dapat menemukan informasi pembayaran untuk pesanan Anda. Silakan periksa riwayat pesanan Anda atau hubungi dukungan pelanggan.";
+                statusText.textContent = "Status pesanan tidak diketahui.";
+                statusText.classList.add('text-gray-600');
+                estimateText.textContent = "Informasi lebih lanjut tidak tersedia.";
+                estimateText.classList.add('text-gray-700');
+            }
+        });
+    </script>
 </body>
 </html>
