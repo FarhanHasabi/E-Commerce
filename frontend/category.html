@@ -49,7 +49,7 @@
         @media (min-width: 1024px) {
             .sort-container {
                 width: auto;
-                margin-top: 0;
+                margin-top: 1;
             }
         }
     </style>
@@ -59,7 +59,7 @@
     <header class="bg-white shadow-md sticky top-0 z-10">
         <nav class="container mx-auto p-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center">
-                <img src="assets/img/logo.png" alt="Glamora Logo" class="h-8 md:h-10 w-auto" />
+                <img src="assets/img/logo.png" alt="Glamora Logo" class="h-10 md:h-12 w-auto" />
             </a>
             <ul class="flex space-x-6 text-sm font-medium">
                 <li><a href="index.html" class="text-gray-700 hover:text-pink-600 transition">Home</a></li>
@@ -76,7 +76,7 @@
         <div class="container mx-auto filter-bar-content">
             
             <div class="relative w-full max-w-lg mb-4 lg:mb-0">
-                <input type="text" placeholder="Search Products..." 
+                <input type="text" placeholder="Cari Produk..." 
                         class="search-input w-full p-3 pl-10 border-2 border-pink-300 rounded-full 
                             focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition shadow-md" 
                         id="searchInput"
@@ -88,21 +88,21 @@
 
             <div class="sort-container">
                 <select class="filter-dropdown p-2 border border-gray-300 rounded-lg text-sm bg-white cursor-pointer shadow-sm" id="sortFilter">
-                    <option value="name.asc">Sort By Name (A-Z)</option>
-                    <option value="name.desc">Sort By Name (Z-Z)</option>
-                    <option value="price.asc">Price: Low to High</option>
-                    <option value="price.desc">Price: High to Low</option>
+                    <option value="name.asc">Urutkan Nama (A-Z)</option>
+                    <option value="name.desc">Urutkan Nama (Z-A)</option>
+                    <option value="price.asc">Harga: Rendah ke Tinggi</option>
+                    <option value="price.desc">Harga: Tinggi ke Rendah</option>
                 </select>
             </div>
         </div>
     </div>
 
     <main class="container mx-auto p-6 md:p-8">
-        <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Product Category</h1>
+        <h1 class="text-4xl font-playfair font-bold text-gray-800 mb-8 border-b-2 border-pink-200 pb-3">Kategori Produk</h1>
 
         <div class="category-layout">
             <aside class="sidebar p-6 bg-white rounded-xl shadow-lg h-fit">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Kategori Produk</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Kategori</h3>
                 <ul class="category-list space-y-2" id="categoryList">
                     <li><button class="w-full text-left btn-category bg-pink-600 text-white hover:bg-pink-700 transition px-4 py-2 rounded-lg font-medium shadow" data-table="products">Semua</button></li>
                     <li><button class="w-full text-left btn-category text-gray-700 hover:bg-pink-100 transition px-4 py-2 rounded-lg" data-table="mens_products">Pakaian Pria</button></li>
@@ -362,9 +362,9 @@
 
             const titleMap = {
                 'products': 'Semua Rekomendasi Glamora',
-                'mens_products': 'Pilihan Pakaian Pria',
+                'mens_products': 'Koleksi Pakaian Pria',
                 'women_products': 'Koleksi Pakaian Wanita',
-                'kid_products': 'Pakaian Anak Terbaik'
+                'kid_products': 'Koleksi Pakaian Anak'
             };
             productSectionTitle.textContent = titleMap[tableName] || 'Rekomendasi Glamora';
 
@@ -630,13 +630,61 @@
                 loadCurrentProducts();
             }
         });
-        
+
+        /**
+         * Fungsi Baru: Mendapatkan nilai parameter kueri dari URL.
+         */
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        /**
+         * Fungsi Baru: Menangani inisialisasi kategori dari URL.
+         */
+        function initializeCategoryFromUrl() {
+            const categoryTable = getQueryParam('table');
+            const validTables = ['mens_products', 'women_products', 'kid_products', 'products']; 
+            
+            if (categoryTable && validTables.includes(categoryTable)) {
+                
+                // 1. Set currentTable ke nilai dari URL
+                currentTable = categoryTable;
+                
+                // 2. Simulasikan klik pada tombol kategori yang sesuai
+                const targetButton = document.querySelector(`.btn-category[data-table="${categoryTable}"]`);
+                
+                if (targetButton) {
+                    // Update tampilan tombol kategori
+                    document.querySelectorAll('.btn-category').forEach(btn => {
+                        btn.classList.remove('bg-pink-600', 'text-white', 'shadow');
+                        btn.classList.add('text-gray-700', 'hover:bg-pink-100');
+                    });
+                    targetButton.classList.add('bg-pink-600', 'text-white', 'shadow');
+                    targetButton.classList.remove('text-gray-700', 'hover:bg-pink-100');
+                } else {
+                    // Jika target tidak ditemukan, pastikan 'Semua' yang terpilih
+                    document.querySelector('.btn-category[data-table="products"]').click(); 
+                    return;
+                }
+                
+            } else {
+                // Jika tidak ada parameter 'table' atau tidak valid, 
+                // pastikan kategori default ('products' / 'Semua') yang terpilih
+                currentTable = 'products';
+                // Tidak perlu klik, karena loadCurrentProducts akan dipanggil
+            }
+        }
+
         // --- On Load Setup ---
         
         // 1. Inisialisasi status login
         updateAuthStatus(); 
 
-        // 2. Muat produk default ('products') saat halaman dimuat
+        // 2. *BARU:* Inisialisasi kategori dari URL (Ini akan memperbarui currentTable jika ada parameter)
+        initializeCategoryFromUrl();
+
+        // 3. Muat produk default (atau dari URL) saat halaman dimuat
         loadCurrentProducts(); 
     </script>
 </body>
